@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil - Guia BSI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="background-animation">
+        <div id="stars1"></div>
+        <div id="stars2"></div>
+        <div id="stars3"></div>
+    </div>
+
+    <header>
+        <a href="index.html" class="logo-link">
+            <img src="logo.svg" alt="Logo Guia BSI" class="logo-img">
+        </a>
+        <nav>
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="sobre-bsi.html">O que é BSI?</a></li>
+            </ul>
+        </nav>
+        <a href="index.html" class="logout-button-nav">Sair</a>
+        <button id="theme-toggle">Modo Escuro</button>
+    </header>
+
+    <main>
+        <div class="profile-container">
+            <div class="profile-card glass-panel">
+                
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <div class="avatar-overlay">
+                            <label for="avatar-upload">Alterar Foto</label>
+                            <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+                    <div class="profile-details">
+                        <h1>Fernando (Exemplo)</h1>
+                        <p class="user-email">fernando@exemplo.com</p>
+                        <p class="member-since">Membro desde: Outubro de 2025</p>
+                    </div>
+                </div>
+
+                <div class="profile-stats">
+                    <div class="stat-card">
+                        <span class="stat-number">75%</span>
+                        <span class="stat-label">Progresso do Guia</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">12</span>
+                        <span class="stat-label">Artigos Salvos</span>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <button class="button-primary" id="open-edit-modal-btn">Editar Perfil</button>
+                    <button class="button-secondary" id="open-change-password-modal-btn">Alterar Senha</button>
+                </div>
+
+                <div class="danger-zone">
+                    <h4>Zona de Perigo</h4>
+                    <p>A ação abaixo é permanente e não poderá ser desfeita.</p>
+                    <button class="button-danger">Deletar Minha Conta</button>
+                </div>
+
+            </div>
+        </div>
+        <div id="edit-profile-modal" class="modal-overlay">
+            <div class="modal-content glass-panel">
+                <div class="modal-header">
+                    <h2>Editar Informações</h2>
+                    <span class="close-modal" id="close-modal-btn">&times;</span>
+                </div>
+                <form id="edit-profile-form">
+                    <div class="input-group">
+                        <label for="edit-name">Nome Completo</label>
+                        <input type="text" id="edit-name" value="Fernando (Exemplo)">
+                    </div>
+                    <div class="input-group">
+                        <label for="edit-email">Email</label>
+                        <input type="email" id="edit-email" value="fernando@exemplo.com">
+                    </div>
+                    <button type="submit" class="button-primary">Salvar Alterações</button>
+                </form>
+            </div>
+        </div>
+        <div id="change-password-modal" class="modal-overlay">
+            <div class="modal-content glass-panel">
+                <div class="modal-header">
+                    <h2>Alterar Senha</h2>
+                    <span class="close-modal" id="close-password-modal-btn">&times;</span>
+                </div>
+                <form id="change-password-form">
+                    <div class="input-group">
+                        <label for="current-password">Senha Atual</label>
+                        <input type="password" id="current-password" placeholder="Digite sua senha atual" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="new-password">Nova Senha</label>
+                        <input type="password" id="new-password" placeholder="Mínimo 8 caracteres" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="confirm-new-password">Confirmar Nova Senha</label>
+                        <input type="password" id="confirm-new-password" placeholder="Repita a nova senha" required>
+                    </div>
+                    <button type="submit" class="button-primary">Salvar Nova Senha</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js" defer></script>
+</body>
+</html>

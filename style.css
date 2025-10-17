@@ -1,0 +1,1248 @@
+/* --- 1. Definição das Paletas de Cores Distintas --- */
+:root {
+    /* Tema Claro */
+    --background-color-light: #f8f9fa;
+    --text-color-light: #212529;
+    --primary-color-light: #0d6efd;
+    --secondary-color-light: #6c757d;
+    --accent-color-light: #198754;
+    --glass-bg-light: rgba(99, 57, 92, 0.61);
+    --glass-border-light: rgba(5, 66, 66, 0.342);
+    --shadow-color-light: rgba(0, 0, 0, 0.07);
+}
+html.dark-mode {
+    /* Tema Escuro: "Viagem Cósmica" */
+    --background-color-dark: #000411;
+    --text-color-dark: #e2e8f0;
+    --primary-color-dark: #63b3ed;
+    --secondary-color-dark: #a0aec0;
+    --accent-color-dark: #4fd1c5;
+    --glass-bg-dark: rgba(10, 25, 47, 0.75);
+    --glass-border-dark: rgba(255, 255, 255, 0.2);
+    --shadow-color-dark: rgba(0, 0, 0, 0.3);
+}
+
+/* --- 2. Estilos Globais --- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background-color: var(--background-color-light); transition: background-color 1s ease; }
+html.dark-mode { background-color: var(--background-color-dark); }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.7;
+    background-color: transparent;
+    color: var(--text-color-light);
+    transition: color 0.5s ease;
+}
+html.dark-mode body { color: var(--text-color-dark); }
+
+/* --- 3. Contêiner de Animação de Fundo (TEMA CLARO ATUALIZADO) --- */
+#background-animation {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+/* --- Substitua este bloco de código no seu style.css --- */
+
+/* TEMA CLARO: O novo Gradiente Digital com Padrão de Pontos */
+#background-animation::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    
+    /* Combinando as duas camadas: padrão de pontos sobre o gradiente */
+    background-image: 
+        radial-gradient(rgba(33, 37, 41, 0.07) 1px, transparent 1.5px), /* Camada de cima: Padrão */
+        linear-gradient(-45deg, #d4e0ff, #a3baff, #89f7fe, #66a6ff);   /* Camada de baixo: Gradiente */
+
+    /* Definindo os tamanhos para cada camada, na mesma ordem */
+    background-size: 25px 25px, 400% 400%;
+    
+    animation: gradientBG 15s ease infinite; /* A animação continua a mesma, afetando apenas o gradiente */
+    opacity: 1; /* Visível no tema claro */
+    transition: opacity 1s ease;
+}
+
+/* O resto do CSS (keyframes, tema escuro, etc.) permanece igual */
+@keyframes gradientBG {
+    0% { background-position: 0% 50%, 0% 50%; }
+    50% { background-position: 0% 50%, 100% 50%; }
+    100% { background-position: 0% 50%, 0% 50%; }
+}
+
+/* TEMA ESCURO: Viagem Cósmica */
+#stars1, #stars2, #stars3 {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    opacity: 0; /* Invisível por padrão (no tema claro) */
+    transition: opacity 1s ease;
+}
+
+/* Controlando a visibilidade dos temas */
+html.dark-mode #background-animation::before {
+    opacity: 0; /* Esconde o gradiente no modo escuro */
+}
+html.dark-mode #stars1, html.dark-mode #stars2, html.dark-mode #stars3 {
+    opacity: 1; /* Mostra as estrelas no modo escuro */
+}
+
+/* O resto do código das estrelas continua o mesmo */
+#stars1 { background-image: radial-gradient(1px 1px at 20px 30px, #eee, transparent), radial-gradient(1px 1px at 40px 70px, #fff, transparent), radial-gradient(1px 1px at 50px 160px, #ddd, transparent), radial-gradient(2px 2px at 90px 40px, #fff, transparent), radial-gradient(2px 2px at 130px 80px, #fff, transparent), radial-gradient(2px 2px at 160px 120px, #ddd, transparent); background-size: 200px 200px; animation: moveStars1 15s linear infinite; }
+#stars2 { background-image: radial-gradient(1px 1px at 10px 90px, #eee, transparent), radial-gradient(2px 2px at 30px 110px, #fff, transparent), radial-gradient(2px 2px at 80px 20px, #ddd, transparent), radial-gradient(1px 1px at 120px 140px, #fff, transparent), radial-gradient(2px 2px at 170px 180px, #fff, transparent), radial-gradient(1px 1px at 190px 60px, #ddd, transparent); background-size: 300px 300px; animation: moveStars2 30s linear infinite; }
+#stars3 { background-image: radial-gradient(2px 2px at 5px 150px, #eee, transparent), radial-gradient(1px 1px at 25px 55px, #fff, transparent), radial-gradient(1px 1px at 85px 95px, #ddd, transparent), radial-gradient(2px 2px at 125px 25px, #fff, transparent), radial-gradient(1px 1px at 165px 75px, #fff, transparent), radial-gradient(2px 2px at 185px 115px, #ddd, transparent); background-size: 400px 400px; animation: moveStars3 50s linear infinite; }
+@keyframes moveStars1 { from { background-position-y: 0px; } to { background-position-y: -200px; } }
+@keyframes moveStars2 { from { background-position-y: 0px; } to { background-position-y: -300px; } }
+@keyframes moveStars3 { from { background-position-y: 0px; } to { background-position-y: -400px; } }
+
+/* --- 4. Estilo dos Painéis de Vidro e Layout do Header --- */
+.content-section, .page-title, #index-header, .hero-section.glass-panel {
+    background: var(--glass-bg-light);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border-radius: 16px; border: 1px solid var(--glass-border-light);
+    box-shadow: 0 4px 30px var(--shadow-color-light), inset 0 0 0 1.5px var(--glass-border-light);
+    transition: all 0.5s ease;
+    position: relative;
+    z-index: 1;
+}
+html.dark-mode .content-section, html.dark-mode .page-title, html.dark-mode #index-header, html.dark-mode .hero-section.glass-panel {
+    background: var(--glass-bg-dark); border: 1px solid var(--glass-border-dark);
+    box-shadow: 0 4px 30px var(--shadow-color-dark), inset 0 0 0 1.5px var(--glass-border-dark);
+}
+.content-section:hover, .page-title:hover {
+    transform: translateY(-5px);
+}
+/* O cabeçalho das páginas internas continua no topo */
+header:not(#index-header) {
+    background: var(--glass-bg-light);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border-radius: 16px; border: 1px solid var(--glass-border-light);
+    box-shadow: 0 4px 30px var(--shadow-color-light), inset 0 0 0 1.5px var(--glass-border-light);
+    transition: all 0.5s ease;
+    position: sticky; top: 1rem; margin: 1rem auto 0; max-width: 960px; z-index: 10;
+    padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;
+}
+html.dark-mode header:not(#index-header) {
+    background: var(--glass-bg-dark); border: 1px solid var(--glass-border-dark);
+    box-shadow: 0 4px 30px var(--shadow-color-dark), inset 0 0 0 1.5px var(--glass-border-dark);
+}
+header h1 { color: var(--primary-color-light); font-size: 1.8rem; transition: color 0.5s ease; }
+nav ul { list-style: none; margin: 0; padding: 0; }
+nav ul li { display: inline; margin: 0 15px; }
+nav a { color: var(--secondary-color-light); text-decoration: none; font-weight: bold; transition: color 0.5s ease; }
+html.dark-mode nav a { color: var(--secondary-color-dark); }
+nav a:hover, nav a.active { color: var(--primary-color-light); }
+html.dark-mode nav a:hover, html.dark-mode nav a.active { color: var(--primary-color-dark); }
+#theme-toggle { background-color: var(--accent-color-light); color: #fff; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background-color 0.5s ease; z-index: 2; }
+main { max-width: 960px; margin: 2rem auto; padding: 0 20px; }
+.page-title { text-align: center; margin-bottom: 3rem; padding: 2rem; }
+.page-title h2 { font-size: 2.8rem; }
+.page-title p { font-size: 1.2rem; max-width: 700px; margin: 0.5rem auto 0; }
+.content-section { padding: 2rem; margin-bottom: 2.5rem; }
+.content-section h3 { font-size: 1.8rem; color: var(--primary-color-light); margin-bottom: 1.5rem; border-bottom: 2px solid var(--accent-color-light); padding-bottom: 0.5rem; transition: all 0.5s ease; }
+html.dark-mode .content-section h3 { color: var(--primary-color-dark); border-bottom-color: var(--accent-color-dark); }
+.content-section p, .content-section ul, .content-section li { font-size: 1.1rem; }
+
+/* --- NOVO LAYOUT DE SCROLL EXCLUSIVO PARA O INDEX.HTML --- */
+body.index-page { overflow: hidden; }
+#index-wrapper { height: 100vh; width: 100%; display: flex; flex-direction: column; }
+.hero-section { padding: 2rem; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; flex-shrink: 0; min-height: 40vh; }
+#index-header { position: sticky; top: 0; z-index: 10; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+.scroll-container { flex-grow: 1; overflow-y: auto; padding: 2rem 0; }
+.scroll-container::-webkit-scrollbar { width: 8px; }
+.scroll-container::-webkit-scrollbar-track { background: transparent; }
+.scroll-container::-webkit-scrollbar-thumb { background-color: rgba(128, 128, 128, 0.4); border-radius: 10px; }
+.back-to-top { text-align: center; padding: 2rem; }
+.back-to-top a { color: var(--primary-color-light); font-weight: bold; text-decoration: none; background: var(--glass-bg-light); padding: 10px 20px; border-radius: 8px; border: 1px solid var(--glass-border-light); }
+html.dark-mode .back-to-top a { color: var(--primary-color-dark); background: var(--glass-bg-dark); border: 1px solid var(--glass-border-dark); }
+
+/* --- Chatbot Styles --- */
+#ai-chat-button, #ai-chat-window .chat-header {
+    background: var(--glass-bg-light);
+    border: 1px solid var(--glass-border-light);
+}
+html.dark-mode #ai-chat-button, html.dark-mode #ai-chat-window .chat-header {
+    background: var(--glass-bg-dark);
+    border: 1px solid var(--glass-border-dark);
+}
+#ai-chat-button { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 1000; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+#ai-chat-button:hover { transform: scale(1.1); }
+#ai-chat-button svg { width: 32px; height: 32px; stroke: var(--text-color-light); transition: stroke 0.5s ease; }
+html.dark-mode #ai-chat-button svg { stroke: var(--text-color-dark); }
+#ai-chat-window { position: fixed; bottom: 100px; right: 25px; width: 350px; max-width: 90vw; height: 500px; max-height: 80vh; border-radius: 16px; z-index: 1001; display: flex; flex-direction: column; overflow: hidden; background: var(--glass-bg-light); border: 1px solid var(--glass-border-light); }
+html.dark-mode #ai-chat-window { background: var(--glass-bg-dark); border: 1px solid var(--glass-border-dark); }
+#ai-chat-window .chat-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-radius: 0; border-bottom: 1px solid var(--glass-border-light); }
+html.dark-mode #ai-chat-window .chat-header { border-bottom: 1px solid var(--glass-border-dark); }
+#ai-chat-window .chat-header h3 { margin: 0; font-size: 1.2rem; color: var(--primary-color-light); }
+html.dark-mode #ai-chat-window .chat-header h3 { color: var(--primary-color-dark); }
+#close-chat { font-size: 2rem; cursor: pointer; opacity: 0.7; }
+#close-chat:hover { opacity: 1; }
+#chat-messages { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+.message { padding: 10px 15px; border-radius: 12px; max-width: 80%; line-height: 1.5; }
+.user-message { background-color: var(--primary-color-light); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+html.dark-mode .user-message { background-color: var(--primary-color-dark); color: #000411; }
+.ai-message { background: rgba(0,0,0,0.05); align-self: flex-start; border-bottom-left-radius: 2px; }
+html.dark-mode .ai-message { background: rgba(255,255,255,0.08); }
+.chat-input-container { padding: 15px; border-top: 1px solid var(--glass-border-light); }
+html.dark-mode .chat-input-container { border-top: 1px solid var(--glass-border-dark); }
+#chat-input { width: 100%; padding: 10px; border: none; border-radius: 8px; background-color: rgba(0,0,0,0.05); color: var(--text-color-light); font-size: 1rem; }
+html.dark-mode #chat-input { background-color: rgba(255,255,255,0.1); color: var(--text-color-dark); }
+#chat-input:focus { outline: 2px solid var(--primary-color-light); }
+html.dark-mode #chat-input:focus { outline: 2px solid var(--primary-color-dark); }
+
+/* --- ESTILOS PARA A NOVA SEÇÃO DE DESTAQUES DO INDEX --- */
+
+.highlights-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px; /* Espaçamento entre os cards */
+    margin-top: 2rem;
+}
+
+.highlight-card {
+    background: var(--glass-bg-light);
+    border: 1px solid var(--glass-border-light);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    width: 24%; /* Divide o espaço para 4 cards */
+    transition: transform 0.3s ease;
+}
+
+html.dark-mode .highlight-card {
+    background: var(--glass-bg-dark);
+    border: 1px solid var(--glass-border-dark);
+}
+
+.highlight-card:hover {
+    transform: translateY(-10px);
+}
+
+.highlight-card h4 {
+    color: var(--primary-color-light);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+html.dark-mode .highlight-card h4 {
+    color: var(--primary-color-dark);
+}
+
+.highlight-card p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* --- ESTILOS PARA A NOVA VITRINE DE LOGOS --- */
+
+.logos-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 2.5rem;
+    opacity: 0.7;
+}
+
+.logo-item {
+    background: var(--glass-bg-light);
+    border: 1px solid var(--glass-border-light);
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+html.dark-mode .logo-item {
+    background: var(--glass-bg-dark);
+    border: 1px solid var(--glass-border-dark);
+}
+
+/* --- ESTILOS PARA OS NOVOS LINKS DOS LOGOS --- */
+
+.logo-link {
+    text-decoration: none; /* Remove o sublinhado do link */
+    color: inherit; /* Faz o texto herdar a cor do tema (claro ou escuro) */
+    transition: transform 0.3s ease;
+}
+
+.logo-link:hover {
+    transform: scale(1.05); /* Efeito sutil de zoom ao passar o mouse */
+}
+
+/* --- NOVA IDENTIDADE VISUAL PARA O TOPO DO INDEX --- */
+
+/* Efeito de "pop-up" para destacar a seção principal */
+.hero-section.glass-panel {
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    /* Garante que o brilho não vaze para fora */
+    overflow: hidden;
+}
+
+/* O brilho holográfico animado */
+.hero-section.glass-panel::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%; /* Começa fora da tela, à esquerda */
+    width: 300%; /* Bem largo para um gradiente suave */
+    height: 5px; /* Altura da linha de luz */
+    
+    /* O gradiente de aurora com as cores do nosso tema */
+    background: linear-gradient(90deg, transparent, var(--primary-color-light), var(--accent-color-light), var(--primary-color-light), transparent);
+    
+    filter: blur(4px); /* Suaviza o brilho */
+    animation: aurora-glow 8s linear infinite; /* Aplica a animação */
+}
+
+/* No tema escuro, as cores do brilho se adaptam */
+html.dark-mode .hero-section.glass-panel::after {
+    background: linear-gradient(90deg, transparent, var(--primary-color-dark), var(--accent-color-dark), var(--primary-color-dark), transparent);
+}
+
+/* A animação que move o brilho da esquerda para a direita */
+@keyframes aurora-glow {
+    0% {
+        left: -150%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+/* --- ESTILO DA NOVA LOGO SVG --- */
+
+/* Remove decoração do link da logo */
+.logo-link {
+    text-decoration: none;
+}
+
+.logo-img {
+    height: 40px; /* Você pode ajustar esse valor se quiser (ex: 35px, 45px) */
+    width: auto; /* Mantém a proporção correta */
+    display: block; /* Remove espaços extras indesejados */
+}
+
+/* Ajuste para o tema escuro: o texto da logo fica branco */
+html.dark-mode .logo-img {
+   filter: brightness(0) invert(1);
+}
+
+/* --- Classe Especial para Destacar o Painel Hero --- */
+
+/* Estilo para o Tema Claro */
+.hero-highlight {
+    background: #00ffff77; /* Fundo verde-menta bem claro e translúcido */
+    border-color: rgba(45, 212, 191, 0.7);  /* Borda em um tom de menta mais forte */
+}
+
+/* O brilho animado também muda de cor */
+.hero-highlight::after {
+    background: linear-gradient(90deg, transparent, #34d399, #6ee7b7, #34d399, transparent);
+}
+
+/* O título principal (h2) dentro do painel também adota a nova cor */
+.hero-highlight h2 {
+    color: rgb(3, 128, 90); /* Verde escuro para garantir a legibilidade no tema claro */
+}
+
+
+/* Estilo para o Tema Escuro */
+html.dark-mode .hero-highlight {
+    background: rgba(10, 60, 50, 0.75);   /* Fundo verde-esmeralda escuro e profundo */
+    border-color: rgba(45, 212, 191, 0.4); /* Borda menta com menos opacidade */
+}
+
+html.dark-mode .hero-highlight h2 {
+    color: #6ee7b7; /* Verde menta brilhante para ótimo contraste no escuro */
+}
+
+/* --- TEMA DE CORES "AZUL SERENO" (BASEADO NO SEU FIGMA) --- */
+
+/* 1. Redefinindo as variáveis de cor para o Tema Claro */
+:root {
+    --background-color-light: #f0f7ff; /* Fundo geral um pouco azulado */
+    --text-color-light: #1e3a8a;       /* Texto em azul escuro para contraste */
+    --primary-color-light: #3b82f6;    /* Azul primário para links e títulos */
+    --secondary-color-light: #6b7280;  /* Cinza para texto secundário */
+    --accent-color-light: #10b981;     /* Verde para o botão, como na imagem */
+    --glass-bg-light: rgba(255, 255, 255, 0.8); /* Painel de conteúdo padrão */
+    --glass-border-light: rgba(255, 255, 255, 0.7);
+    --shadow-color-light: rgba(0, 0, 0, 0.05);
+}
+
+
+/* 2. Ajustando o fundo para o gradiente azul suave da imagem */
+#background-animation::before {
+    background-image: linear-gradient(-45deg, #dbeafe, #bfdbfe, #a5b4fc, #c7d2fe);
+    /* Removemos o padrão de pontos para um visual mais limpo */
+    background-size: 400% 400%;
+}
+/* A animação @keyframes gradientBG continua a mesma */
+
+
+/* 3. Estilizando o Header e a Navegação com o tom de lilás */
+header:not(#index-header),
+#index-header {
+    background: rgba(224, 231, 255, 0.75); /* O tom de lilás/lavanda translúcido */
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 30px var(--shadow-color-light);
+}
+
+
+/* 4. Estilizando o painel de conteúdo principal ("Decifrando o Tecniquês") */
+.content-section, .page-title {
+    background: rgba(239, 246, 255, 0.9); /* Um branco levemente azulado e mais opaco */
+    border: 1px solid rgba(255, 255, 255, 0.9);
+}
+
+
+/* 5. Ajustes finais de cor no texto para garantir a harmonia */
+.content-section h3 {
+    color: #1d4ed8; /* Um azul mais forte para os subtítulos */
+    border-bottom-color: #93c5fd; /* Borda do subtítulo em azul claro */
+}
+
+/* O texto dos links de navegação também muda */
+nav a { color: var(--text-color-light); }
+nav a:hover, nav a.active { color: var(--primary-color-light); }
+
+/* --- ESTILOS DO RODAPÉ PADRONIZADO --- */
+
+#main-footer {
+    width: 100%;
+    text-align: center;
+    padding: 2rem 1rem;
+    margin-top: auto; /* Empurra o rodapé para o final */
+    font-size: 0.9rem;
+    color: var(--secondary-color-light);
+    background: rgba(128, 128, 128, 0.05); /* Um fundo de vidro bem sutil */
+    border-top: 1px solid var(--glass-border-light);
+    transition: all 0.5s ease;
+}
+
+html.dark-mode #main-footer {
+    color: var(--secondary-color-dark);
+    border-top: 1px solid var(--glass-border-dark);
+}
+
+/* --- ESTILOS DO INDICADOR "DIGITANDO..." --- */
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px !important; /* Força o padding */
+}
+
+.typing-indicator span {
+    height: 8px;
+    width: 8px;
+    margin: 0 2px;
+    background-color: #9e9e9e;
+    border-radius: 50%;
+    display: inline-block;
+    animation: bounce 1.4s infinite ease-in-out both;
+}
+
+html.dark-mode .typing-indicator span {
+    background-color: #a0aec0;
+}
+
+.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1.0); }
+}
+
+/* --- ESTILOS DO NOVO HERO SECTION (CABEÇALHO PRINCIPAL) --- */
+
+.hero-section {
+    padding: 2.5rem 2rem; /* Aumenta o espaço interno */
+    min-height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* O fundo temático relacionado a BSI */
+   /* ... outros estilos ... */
+    background-image: 
+        /* Camada 1: Um gradiente sutil para dar profundidade (opcional, mas mantém a profundidade) */
+        radial-gradient(circle at center, transparent 40%, rgba(219, 234, 254, 0.5) 100%),
+        /* Camada 2: O fundo SVG que criamos */
+        url('background-tech.svg'); /* <<-- AQUI! */ /* <<-- IMPORTANTE: Coloque o caminho da sua imagem aqui */
+    
+    background-size: cover;
+    background-position: center center;
+    border-bottom: 1px solid var(--glass-border-light);
+}
+
+html.dark-mode .hero-section {
+    background-image: 
+        radial-gradient(circle at center, transparent 40%, rgba(10, 25, 47, 0.7) 100%),
+        url('background-tech.png'); /* <<-- IMPORTANTE: Coloque o caminho da sua imagem aqui */
+    border-bottom: 1px solid var(--glass-border-dark);
+}
+
+.hero-content-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px; /* Espaço entre a logo e o texto */
+    max-width: 1100px;
+    width: 100%;
+}
+
+.hero-logo {
+    height: 110px; /* Tamanho da logo grande */
+    width: auto;
+    flex-shrink: 0; /* Impede que a logo encolha */
+}
+
+.hero-text {
+    text-align: left; /* Alinha o texto à esquerda */
+}
+
+.hero-text h2 {
+    font-size: 2.2rem;
+    color: var(--text-color-light);
+    margin-bottom: 0.5rem;
+}
+
+html.dark-mode .hero-text h2 {
+    color: var(--text-color-dark);
+}
+
+.hero-text p {
+    font-size: 1.1rem;
+    max-width: 550px;
+}
+
+/* --- AJUSTE DE OPACIDADE PARA O HERO SECTION (MODO ESCURO) --- */
+
+/* Este seletor é específico o suficiente para afetar APENAS o painel do topo,
+  deixando a barra de navegação e outros painéis com a opacidade original.
+*/
+.hero-section.glass-panel {
+    /* Usamos 'background' em vez de 'background-color' para garantir que a imagem SVG 
+      continue sendo aplicada por baixo da nova cor mais opaca.
+    */
+    background: 
+        /* 1. A cor de fundo mais opaca (0.9 de alfa) que fica por cima */
+        rgba(10, 25, 47, 0.9) 
+        
+        /* 2. A imagem SVG que fica por baixo, para não desaparecer */
+        url('background-tech.svg');
+
+    /* Essas duas linhas garantem que a imagem SVG continue centralizada e preenchendo o painel.
+    */
+    background-size: cover;
+    background-position: center center;
+}
+
+html.dark-mode .hero-section.glass-panel {
+    /* Usamos 'background' em vez de 'background-color' para garantir que a imagem SVG 
+      continue sendo aplicada por baixo da nova cor mais opaca.
+    */
+    background: 
+        /* 1. A cor de fundo mais opaca (0.9 de alfa) que fica por cima */
+        rgba(10, 25, 47, 0.9) 
+        
+        /* 2. A imagem SVG que fica por baixo, para não desaparecer */
+        url('background-tech-dark.svg');
+
+    /* Essas duas linhas garantem que a imagem SVG continue centralizada e preenchendo o painel.
+    */
+    background-size: cover;
+    background-position: center center;
+}
+
+/* --- AJUSTE DA LOGO PARA O TEMA ESCURO --- */
+
+/* Este seletor afeta todas as imagens com a classe 'logo-img' 
+   (tanto a do topo quanto a da barra de navegação) 
+   APENAS quando o modo escuro está ativo. */
+html.dark-mode .logo-img {
+   /* O truque: 
+      1. brightness(0) deixa a imagem toda preta.
+      2. invert(1) inverte as cores, transformando o preto em branco.
+   */
+   filter: brightness(0) invert(1);
+}
+
+/* --- ESTILOS DE RESPONSIVIDADE PARA DISPOSITIVOS MÓVEIS --- */
+
+@media (max-width: 768px) {
+
+    /* --- 1. Ajustes Globais --- */
+    body {
+        /* Melhora a legibilidade em telas pequenas */
+        line-height: 1.6;
+    }
+
+    main {
+        /* Remove o espaçamento lateral fixo */
+        padding: 0 1rem;
+    }
+
+    .content-section, .page-title {
+        padding: 1.5rem;
+    }
+
+
+    /* --- 2. Ajustes no Cabeçalho e Navegação --- */
+    header, #index-header {
+        /* Empilha a logo, navegação e botão */
+        flex-direction: column;
+        gap: 15px; /* Espaçamento entre os itens empilhados */
+        padding: 1rem;
+    }
+
+    nav ul {
+        text-align: center; /* Centraliza os links do menu */
+    }
+
+    nav ul li {
+        /* Exibe os links um abaixo do outro */
+        display: block;
+        margin: 10px 0;
+    }
+
+
+    /* --- 3. Reorganização do Topo (Hero Section) --- */
+    .hero-content-wrapper {
+        /* Empilha a logo e o texto principal */
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .hero-logo {
+        height: 80px; /* Diminui um pouco a logo grande */
+    }
+
+    .hero-text {
+        text-align: center; /* Centraliza o texto no mobile */
+    }
+
+    .hero-text h2 {
+        font-size: 1.8rem; /* Reduz o tamanho do título principal */
+    }
+
+
+    /* --- 4. Empilhamento dos Cards de Destaque --- */
+    .highlights-container {
+        /* Empilha os 4 cards */
+        flex-direction: column;
+        align-items: center; /* Centraliza os cards */
+        gap: 25px;
+    }
+
+    .highlight-card {
+        /* Faz cada card ocupar quase toda a largura */
+        width: 95%;
+    }
+
+
+    /* --- 5. Ajustes nos Títulos e Fontes --- */
+    .page-title h2 {
+        font-size: 2rem;
+    }
+
+    .content-section h3 {
+        font-size: 1.5rem;
+    }
+
+
+    /* --- 6. Tabela de Comparação com Scroll Horizontal --- */
+    .table-container {
+        /* Permite que a tabela deslize para os lados */
+        overflow-x: auto;
+        /* Melhora a experiência de scroll em iOS */
+        -webkit-overflow-scrolling: touch;
+        /* Adiciona uma sombra sutil para indicar que há conteúdo a ser rolado */
+        box-shadow: inset -10px 0 8px -8px rgba(0,0,0,0.1);
+    }
+    
+    html.dark-mode .table-container {
+        box-shadow: inset -10px 0 8px -8px rgba(255,255,255,0.1);
+    }
+    
+    table {
+        /* Garante que a tabela tenha uma largura mínima para forçar o scroll */
+        min-width: 700px;
+    }
+
+
+    /* --- 7. Chatbot Otimizado para Mobile --- */
+    #ai-chat-window {
+        /* Ocupa quase toda a tela para facilitar a digitação */
+        width: 95vw;
+        height: 75vh;
+        bottom: 10px;
+        right: 2.5vw; /* Centraliza na horizontal */
+        max-height: none; /* Remove a limitação de altura */
+    }
+
+    #ai-chat-button {
+        /* Aumenta um pouco o botão para facilitar o toque */
+        width: 65px;
+        height: 65px;
+        bottom: 15px;
+        right: 15px;
+    }
+}
+
+/* --- ESTILOS DAS PÁGINAS DE LOGIN E CADASTRO --- */
+
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 0;
+}
+
+.auth-form {
+    width: 100%;
+    max-width: 450px; /* Largura máxima do formulário */
+    padding: 2.5rem;
+}
+
+.auth-form h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--primary-color-light);
+    font-size: 2rem;
+}
+
+html.dark-mode .auth-form h2 {
+    color: var(--primary-color-dark);
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: var(--secondary-color-light);
+}
+
+html.dark-mode .input-group label {
+    color: var(--secondary-color-dark);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid var(--glass-border-light);
+    background-color: rgba(255, 255, 255, 0.5);
+    font-size: 1rem;
+    color: var(--text-color-light);
+    transition: all 0.3s ease;
+}
+
+html.dark-mode .input-group input {
+    border: 1px solid var(--glass-border-dark);
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color-dark);
+}
+
+.input-group input::placeholder {
+    color: var(--secondary-color-light);
+    opacity: 0.7;
+}
+
+html.dark-mode .input-group input::placeholder {
+    color: var(--secondary-color-dark);
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--primary-color-light);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+html.dark-mode .input-group input:focus {
+    border-color: var(--primary-color-dark);
+    box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.3);
+}
+
+.auth-button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--accent-color-light);
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+html.dark-mode .auth-button {
+    background-color: var(--accent-color-dark);
+    color: #000411;
+}
+
+.auth-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+html.dark-mode .auth-button:hover {
+    box-shadow: 0 4px 15px rgba(79, 209, 197, 0.3);
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.auth-switch a {
+    color: var(--primary-color-light);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+html.dark-mode .auth-switch a {
+    color: var(--primary-color-dark);
+}
+
+/* --- ESTILOS PARA VALIDAÇÃO DE FORMULÁRIO --- */
+
+.input-group input.invalid {
+    border-color: #e53e3e; /* Borda vermelha para erro */
+    box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.2);
+}
+
+.error-message {
+    color: #e53e3e;
+    font-size: 0.875rem; /* Tamanho pequeno para a mensagem */
+    font-weight: bold;
+    margin-top: 5px;
+    display: none; /* A mensagem fica escondida por padrão */
+    height: 1.2em; /* Garante que o layout não "pule" quando a msg aparece */
+}
+
+.error-message.active {
+    display: block; /* A classe 'active' torna a mensagem visível */
+}
+
+/* --- ESTILOS DA PÁGINA DE PERFIL --- */
+
+.profile-container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.profile-card {
+    width: 100%;
+    max-width: 700px;
+    padding: 2.5rem;
+    text-align: center;
+}
+
+.profile-card h2 {
+    color: var(--primary-color-light);
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+}
+
+html.dark-mode .profile-card h2 {
+    color: var(--primary-color-dark);
+}
+
+.welcome-text {
+    font-size: 1.1rem;
+    margin-bottom: 2.5rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.profile-info {
+    text-align: left;
+    margin-bottom: 2.5rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--glass-border-light);
+    font-size: 1.1rem;
+}
+
+html.dark-mode .info-item {
+    border-bottom: 1px solid var(--glass-border-dark);
+}
+
+.info-item strong {
+    color: var(--secondary-color-light);
+}
+
+html.dark-mode .info-item strong {
+    color: var(--secondary-color-dark);
+}
+
+.logout-button, .logout-button-nav {
+    display: inline-block;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    background-color: #dc3545; /* Vermelho para indicar ação de sair/destrutiva */
+    color: #fff;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.logout-button:hover, .logout-button-nav:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+}
+
+/* Esconde o botão grande no mobile, onde o do header já é suficiente */
+@media (max-width: 768px) {
+    .logout-button {
+        display: none;
+    }
+}
+
+/* Esconde o botão do header em telas grandes */
+@media (min-width: 769px) {
+    .logout-button-nav {
+        display: none;
+    }
+}
+
+
+/* --- ESTILOS AVANÇADOS DA PÁGINA DE PERFIL --- */
+
+.profile-card {
+    max-width: 800px; /* Deixa o card mais largo */
+    text-align: left; /* Alinha o texto à esquerda por padrão */
+}
+
+/* Cabeçalho do Perfil (Foto + Detalhes) */
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--glass-border-light);
+}
+html.dark-mode .profile-header {
+    border-bottom-color: var(--glass-border-dark);
+}
+
+.profile-avatar {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: rgba(0,0,0,0.1);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Garante que a foto não vaze */
+    cursor: pointer;
+}
+.profile-avatar svg {
+    width: 60%;
+    height: 60%;
+    stroke: var(--secondary-color-light);
+}
+html.dark-mode .profile-avatar svg {
+    stroke: var(--secondary-color-dark);
+}
+
+.avatar-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    opacity: 0; /* Escondido por padrão */
+    transition: opacity 0.3s ease;
+}
+.profile-avatar:hover .avatar-overlay {
+    opacity: 1; /* Aparece no hover */
+}
+
+.profile-details h1 {
+    font-size: 2.5rem;
+    color: var(--text-color-light);
+    margin: 0;
+}
+html.dark-mode .profile-details h1 {
+    color: var(--text-color-dark);
+}
+.profile-details .user-email {
+    font-size: 1.1rem;
+    color: var(--secondary-color-light);
+}
+html.dark-mode .profile-details .user-email {
+    color: var(--secondary-color-dark);
+}
+.profile-details .member-since {
+    font-size: 0.9rem;
+    color: var(--secondary-color-light);
+    margin-top: 10px;
+}
+
+/* Estatísticas */
+.profile-stats {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 2rem;
+}
+.stat-card {
+    flex-grow: 1;
+    background: rgba(0,0,0,0.03);
+    padding: 1rem;
+    border-radius: 12px;
+    text-align: center;
+}
+html.dark-mode .stat-card {
+    background: rgba(255,255,255,0.05);
+}
+.stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color-light);
+}
+html.dark-mode .stat-number {
+    color: var(--primary-color-dark);
+}
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--secondary-color-light);
+}
+html.dark-mode .stat-label {
+    color: var(--secondary-color-dark);
+}
+
+
+/* Botões de Ação */
+.profile-actions {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 2.5rem;
+}
+
+.button-primary, .button-secondary {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.button-primary {
+    background-color: var(--primary-color-light);
+    color: white;
+}
+html.dark-mode .button-primary {
+    background-color: var(--primary-color-dark);
+    color: #000411;
+}
+
+.button-secondary {
+    background-color: transparent;
+    border: 2px solid var(--secondary-color-light);
+    color: var(--secondary-color-light);
+}
+html.dark-mode .button-secondary {
+    border-color: var(--secondary-color-dark);
+    color: var(--secondary-color-dark);
+}
+
+.button-primary:hover { transform: translateY(-3px); }
+.button-secondary:hover { background-color: rgba(128,128,128,0.1); }
+
+
+/* Zona de Perigo */
+.danger-zone {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border: 2px dashed #e53e3e;
+    border-radius: 12px;
+}
+.danger-zone h4 {
+    color: #e53e3e;
+    margin-bottom: 0.5rem;
+}
+.danger-zone p {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+.button-danger {
+    background-color: #dc3545;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.button-danger:hover {
+    background-color: #c82333;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+}
+
+/* Ajustes para Mobile */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column; /* Empilha a foto e os detalhes */
+        text-align: center;
+    }
+    .profile-details {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .profile-stats, .profile-actions {
+        flex-direction: column; /* Empilha os cards e botões */
+    }
+}
+
+/* --- ESTILOS DO MODAL DE EDIÇÃO DE PERFIL --- */
+
+.modal-overlay {
+    position: fixed; /* Cobre a tela inteira */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Fundo escuro semi-transparente */
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000; /* Garante que fique na frente de tudo */
+    
+    /* Escondido por padrão */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.active {
+    /* Torna o modal visível com uma transição suave */
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 500px;
+    padding: 2rem;
+    position: relative;
+    /* Animação de "zoom" ao aparecer */
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal-content {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--glass-border-light);
+}
+html.dark-mode .modal-header {
+    border-bottom-color: var(--glass-border-dark);
+}
+
+.modal-header h2 {
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.close-modal {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--secondary-color-light);
+    cursor: pointer;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+html.dark-mode .close-modal {
+    color: var(--secondary-color-dark);
+}
+.close-modal:hover {
+    transform: scale(1.2);
+}
+
+/* --- ESTILOS PARA AÇÕES DO HEADER (LOGIN/PERFIL) --- */
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espaçamento entre os links e o botão de tema */
+}
+
+.login-link-nav,
+.profile-link-nav,
+.logout-link-nav {
+    font-weight: bold;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+/* Estilo do link de Perfil (similar aos de navegação) */
+.profile-link-nav {
+    color: var(--primary-color-light);
+}
+html.dark-mode .profile-link-nav {
+    color: var(--primary-color-dark);
+}
+.profile-link-nav:hover {
+    background-color: rgba(128, 128, 128, 0.1);
+}
+
+/* Estilo do link de Sair (com destaque para a ação) */
+.logout-link-nav {
+    color: var(--secondary-color-light);
+    border: 1px solid var(--glass-border-light);
+}
+html.dark-mode .logout-link-nav {
+    color: var(--secondary-color-dark);
+    border-color: var(--glass-border-dark);
+}
+.logout-link-nav:hover {
+    background-color: rgba(220, 53, 69, 0.1); /* Fundo avermelhado sutil */
+    color: #dc3545;
+    border-color: rgba(220, 53, 69, 0.3);
+}

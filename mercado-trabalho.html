@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mercado de Trabalho - Guia BSI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="background-animation"><div id="stars1"></div><div id="stars2"></div><div id="stars3"></div></div>
+
+    <header>
+        <a href="index.html" class="logo-link">
+        <img src="logo.svg" alt="Logo Guia BSI" class="logo-img">
+    </a>
+    <nav>
+        <ul>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="sobre-bsi.html">O que é BSI?</a></li>
+            <li><a href="mercado-trabalho.html">Mercado de Trabalho</a></li>
+            <li><a href="comparativo-cursos.html">BSI é Comparativos</a></li>
+        </ul>
+    </nav>
+    <div class="header-actions">
+        <a href="login.html" class="login-link-nav">Login</a>
+        
+        <a href="perfil.html" class="profile-link-nav" style="display: none;">Meu Perfil</a>
+        <a href="#" id="logout-btn" class="logout-link-nav" style="display: none;">Sair</a>
+        
+        <button id="theme-toggle">Modo Escuro</button>
+    </div>
+</header>
+
+    <main>
+        <section class="page-title">
+            <h2>Um Oceano de Oportunidades</h2>
+            <p>Explore as carreiras, os salários e a flexibilidade que a área de BSI oferece.</p>
+        </section>
+
+        <section class="content-section">
+            <h3>Estimativas Salariais: Do Júnior ao Sênior</h3>
+            <p>A área de tecnologia é conhecida pelos salários competitivos. Abaixo estão as estimativas de fato para o mercado brasileiro, que podem variar conforme a região, especialização e nível de inglês:</p>
+            <ul>
+                <li><strong>Profissional Júnior (Início de carreira):</strong> A faixa inicial geralmente fica entre <strong>R$ 3.500 e R$ 6.000</strong>.</li>
+                <li><strong>Profissional Pleno (Experiência intermediária):</strong> Com alguns anos de experiência, os salários progridem para a faixa de <strong>R$ 6.000 a R$ 12.000</strong>.</li>
+                <li><strong>Profissional Sênior ou Especialista:</strong> No topo da carreira técnica, os valores ultrapassam facilmente os <strong>R$ 12.000</strong>, podendo chegar a <strong>R$ 20.000 ou mais</strong> em cargos de liderança ou em áreas de alta demanda como Ciência de Dados e Segurança.</li>
+            </ul>
+        </section>
+
+        <section class="content-section">
+            <h3>Flexibilidade: Home Office e Horários Adaptáveis</h3>
+            <p>Uma das maiores vantagens da carreira em TI é a flexibilidade. A natureza do trabalho, que é digital, permite que muitas empresas ofereçam modelos de trabalho modernos e desejados:</p>
+            <ul>
+                <li><strong>Trabalho Remoto (Home Office):</strong> É uma realidade consolidada na área. Você pode trabalhar do conforto da sua casa para empresas de qualquer lugar do Brasil ou do mundo, eliminando o tempo de deslocamento.</li>
+                <li><strong>Modelo Híbrido:</strong> Muitas empresas oferecem a opção de ir ao escritório apenas alguns dias da semana, combinando o melhor dos dois mundos.</li>
+                <li><strong>Horários Flexíveis:</strong> O foco da área de tecnologia é na entrega de resultados, não em cumprir um horário rígido. É comum ter flexibilidade para adaptar seu horário de trabalho às suas necessidades pessoais.</li>
+            </ul>
+        </section>
+
+        <section class="content-section">
+            <h3>Principais Carreiras para Seguir</h3>
+            <p>Abaixo estão algumas das áreas de atuação mais populares, mas lembre-se que a escolha é sua e novas profissões surgem a todo momento:</p>
+            <ul>
+                <li><strong>Desenvolvimento de Software:</strong> Crie aplicações web, mobile e desktop.</li>
+                <li><strong>Análise de Dados:</strong> Transforme dados em insights valiosos para as empresas.</li>
+                <li><strong>Segurança da Informação:</strong> Proteja sistemas contra ataques cibernéticos.</li>
+                <li><strong>Infraestrutura e Cloud:</strong> Gerencie servidores e serviços na nuvem (AWS, Azure, GCP).</li>
+                <li><strong>Gestão de Projetos e Produtos:</strong> Lidere equipes e o desenvolvimento de novas tecnologias.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer id="main-footer">
+        <p>&copy; 2025 Guia BSI. Todos os direitos reservados. Um projeto de extensão acadêmica.</p>
+    </footer>
+    <div id="ai-chat-button" class="glass-panel"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
+    <div id="ai-chat-window" class="glass-panel" style="display: none;"><div class="chat-header glass-panel"><h3>Assistente BSI</h3><span id="close-chat">&times;</span></div><div id="chat-messages"><div class="message ai-message">Olá! Sou o assistente virtual do Guia BSI. Como posso ajudar?</div></div><div class="chat-input-container"><input type="text" id="chat-input" placeholder="Digite sua pergunta..."></div></div>
+    
+
+    <script src="script.js" defer></script>
+</body>
+</html>

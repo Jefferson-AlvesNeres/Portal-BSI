@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Guia BSI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="background-animation">
+        <div id="stars1"></div>
+        <div id="stars2"></div>
+        <div id="stars3"></div>
+    </div>
+
+    <header>
+        <a href="index.html" class="logo-link">
+            <img src="logo.svg" alt="Logo Guia BSI" class="logo-img">
+        </a>
+        <nav>
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="sobre-bsi.html">O que é BSI?</a></li>
+                <li><a href="mercado-trabalho.html">Mercado de Trabalho</a></li>
+                <li><a href="comparativo-cursos.html">BSI é Comparativos</a></li>
+            </ul>
+        </nav>
+        <button id="theme-toggle">Modo Escuro</button>
+    </header>
+
+    <main>
+        <div class="auth-container">
+            <form class="auth-form glass-panel" id="registration-form" novalidate>
+    <h2>Crie sua Conta</h2>
+    
+    <div class="input-group">
+        <label for="name">Nome Completo</label>
+        <input type="text" id="name" name="name" placeholder="Seu nome" required>
+        <span class="error-message" id="name-error"></span>
+    </div>
+
+    <div class="input-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="seuemail@exemplo.com" required>
+        <span class="error-message" id="email-error"></span>
+    </div>
+
+    <div class="input-group">
+        <label for="password">Senha</label>
+        <input type="password" id="password" name="password" placeholder="Mínimo 8 caracteres" required>
+        <span class="error-message" id="password-error"></span>
+    </div>
+
+    <div class="input-group">
+        <label for="confirm-password">Confirmar Senha</label>
+        <input type="password" id="confirm-password" name="confirm-password" placeholder="Repita a senha" required>
+        <span class="error-message" id="confirm-password-error"></span>
+    </div>
+
+    <button type="submit" class="auth-button">Criar Conta</button>
+    <p class="auth-switch">Já tem uma conta? <a href="login.html">Faça login</a></p>
+</form>
+        </div>
+    </main>
+
+    <script src="script.js" defer></script>
+</body>
+</html>
