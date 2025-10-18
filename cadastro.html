@@ -14,9 +14,12 @@
     </div>
 
     <header>
+    <div class="header-inner">
+        
         <a href="index.html" class="logo-link">
             <img src="logo.svg" alt="Logo Guia BSI" class="logo-img">
         </a>
+
         <nav>
             <ul>
                 <li><a href="index.html">Início</a></li>
@@ -25,8 +28,21 @@
                 <li><a href="comparativo-cursos.html">BSI é Comparativos</a></li>
             </ul>
         </nav>
-        <button id="theme-toggle">Modo Escuro</button>
-    </header>
+
+        <button id="mobile-nav-toggle" aria-label="Abrir menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <div class="header-actions">
+            <a href="login.html" class="login-link-nav">Login</a>
+            <a href="perfil.html" class="profile-link-nav" style="display: none;">Meu Perfil</a>
+            <a href="#" id="logout-btn" class="logout-link-nav" style="display: none;">Sair</a>
+            <button id="theme-toggle">Modo Escuro</button>
+        </div>
+
+    </div> </header>
 
     <main>
         <div class="auth-container">

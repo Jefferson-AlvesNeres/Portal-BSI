@@ -22,27 +22,36 @@
     </div>
 </section>
 
-<header id="index-header" class="glass-panel">
-    <a href="index.html" class="logo-link">
-        <img src="logo.svg" alt="Logo Guia BSI" class="logo-img">
-    </a>
-    <nav>
-        <ul>
-            <li><a href="index.html">Início</a></li>
-            <li><a href="sobre-bsi.html">O que é BSI?</a></li>
-            <li><a href="mercado-trabalho.html">Mercado de Trabalho</a></li>
-            <li><a href="comparativo-cursos.html">BSI é Comparativos</a></li>
-        </ul>
-    </nav>
-    <div class="header-actions">
-        <a href="login.html" class="login-link-nav">Login</a>
+<header>
+    <div class="header-inner">
         
-        <a href="perfil.html" class="profile-link-nav" style="display: none;">Meu Perfil</a>
-        <a href="#" id="logout-btn" class="logout-link-nav" style="display: none;">Sair</a>
-        
-        <button id="theme-toggle">Modo Escuro</button>
-    </div>
-</header>
+        <a href="index.html" class="logo-link">
+            <img src="logo.svg" alt="Logo Guia BSI" class="logo-img">
+        </a>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="sobre-bsi.html">O que é BSI?</a></li>
+                <li><a href="mercado-trabalho.html">Mercado de Trabalho</a></li>
+                <li><a href="comparativo-cursos.html">BSI é Comparativos</a></li>
+            </ul>
+        </nav>
+
+        <button id="mobile-nav-toggle" aria-label="Abrir menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <div class="header-actions">
+            <a href="login.html" class="login-link-nav">Login</a>
+            <a href="perfil.html" class="profile-link-nav" style="display: none;">Meu Perfil</a>
+            <a href="#" id="logout-btn" class="logout-link-nav" style="display: none;">Sair</a>
+            <button id="theme-toggle">Modo Escuro</button>
+        </div>
+
+    </div> </header>
         <div class="scroll-container">
             <main>
                 <section class="content-section">
@@ -127,9 +136,10 @@
     </div>
     
     <div id="ai-chat-button" class="glass-panel">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-        </svg>
-    </div>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+</div>
     <div id="ai-chat-window" class="glass-panel" style="display: none;">
         <div class="chat-header glass-panel"><h3>Assistente BSI</h3><span id="close-chat">&times;</span></div>
         <div id="chat-messages"><div class="message ai-message">Olá! Sou o assistente virtual do Guia BSI. Como posso ajudar? Pergunte sobre salário, mercado, matérias, etc.</div></div>

@@ -1,100 +1,141 @@
-// --- NOVA FUNCIONALIDADE: SCROLL SUAVE PARA O TOPO NO INDEX ---
+
+
+// script.js (Versão Completa e Otimizada)
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Procura pelo link só na página que o tem
-    const backToTopLink = document.getElementById('back-to-top-link');
 
-    if (backToTopLink) {
-        // Adiciona o evento de clique
-        backToTopLink.addEventListener('click', (event) => {
-            // Previne o comportamento padrão do link (que não funciona)
-            event.preventDefault();
-
-            // Encontra o container que realmente rola
-            const scrollContainer = document.querySelector('.scroll-container');
-
-            // Manda ele rolar para o topo com animação suave
-            if (scrollContainer) {
-                scrollContainer.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
+    // --- LÓGICA DO SELETOR DE TEMA (RODA EM TODAS AS PÁGINAS) ---
+    const themeToggleButton = document.getElementById('theme-toggle');
+    if (themeToggleButton) {
+        const htmlElement = document.documentElement;
+        const applyTheme = (theme) => {
+            if (theme === 'dark') {
+                htmlElement.classList.add('dark-mode');
+                themeToggleButton.textContent = 'Modo Claro';
+            } else {
+                htmlElement.classList.remove('dark-mode');
+                themeToggleButton.textContent = 'Modo Escuro';
+            }
+        };
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) { applyTheme(savedTheme); }
+        themeToggleButton.addEventListener('click', () => {
+            const isDarkMode = htmlElement.classList.contains('dark-mode');
+            if (isDarkMode) {
+                applyTheme('light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                applyTheme('dark');
+                localStorage.setItem('theme', 'dark');
             }
         });
     }
-});
 
-// Espera o conteúdo da página carregar completamente UMA ÚNICA VEZ
-document.addEventListener('DOMContentLoaded', () => {
+    // --- LÓGICA DE ESTADO DE LOGIN (FAKE AUTH - RODA EM TODAS AS PÁGINAS) ---
+    const checkLoginState = () => {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+        const loginLink = document.querySelector('.login-link-nav');
+        const profileLink = document.querySelector('.profile-link-nav');
+        const logoutBtn = document.getElementById('logout-btn');
 
-    // --- LÓGICA DO SELETOR DE TEMA ---
-    const themeToggleButton = document.getElementById('theme-toggle');
-    const htmlElement = document.documentElement;
-    const applyTheme = (theme) => {
-        if (theme === 'dark') {
-            htmlElement.classList.add('dark-mode');
-            themeToggleButton.textContent = 'Modo Claro';
+        // NOVO: Seleciona a nova seção CTA
+        const ctaSection = document.getElementById('cta-section'); 
+        
+        if (isLoggedIn) {
+            if (loginLink) loginLink.style.display = 'none';
+            if (profileLink) profileLink.style.display = 'inline-block';
+            if (logoutBtn) logoutBtn.style.display = 'inline-block';
+            
+            // NOVO: Mostra a seção CTA se o usuário estiver logado
+            if (ctaSection) ctaSection.style.display = 'block'; 
+            
         } else {
-            htmlElement.classList.remove('dark-mode');
-            themeToggleButton.textContent = 'Modo Escuro';
+            if (loginLink) loginLink.style.display = 'inline-block';
+            if (profileLink) profileLink.style.display = 'none';
+            if (logoutBtn) logoutBtn.style.display = 'none';
+
+            // NOVO: Esconde a seção CTA se o usuário NÃO estiver logado
+            if (ctaSection) ctaSection.style.display = 'none';
         }
     };
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) { applyTheme(savedTheme); }
-    themeToggleButton.addEventListener('click', () => {
-        const isDarkMode = htmlElement.classList.contains('dark-mode');
-        if (isDarkMode) {
-            applyTheme('light');
-            localStorage.setItem('theme', 'light');
-        } else {
-            applyTheme('dark');
-            localStorage.setItem('theme', 'dark');
-        }
-    });
-
-    // --- CÉREBRO E CONTROLES DO CHATBOT DE IA ---
-    const chatButton = document.getElementById('ai-chat-button');
-    const chatWindow = document.getElementById('ai-chat-window');
-    const closeChatButton = document.getElementById('close-chat');
-    const chatInput = document.getElementById('chat-input');
-    const chatMessages = document.getElementById('chat-messages');
+    checkLoginState(); // Verifica o estado de login assim que a página carrega
     
-    let lastTopicDiscussed = null;
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            sessionStorage.removeItem('isLoggedIn');
+            alert('Você saiu da sua conta.');
+            window.location.href = 'index.html';
+        });
+    }
 
-    const toggleChat = () => {
-        const isOpen = chatWindow.style.display === 'flex';
-        if (isOpen) {
-            chatWindow.style.display = 'none';
-            sessionStorage.setItem('chatState', 'closed'); // Salva o estado fechado
-        } else {
-            chatWindow.style.display = 'flex';
-            sessionStorage.setItem('chatState', 'open'); // Salva o estado aberto
-        }
-    };
+    // --- LÓGICA DO CHATBOT (SE EXISTIR NA PÁGINA) ---
+    const chatButton = document.getElementById('ai-chat-button');
+    if (chatButton) {
+        const chatWindow = document.getElementById('ai-chat-window');
+        const closeChatButton = document.getElementById('close-chat');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+        let lastTopicDiscussed = null;
 
-    chatButton.addEventListener('click', toggleChat);
-    closeChatButton.addEventListener('click', toggleChat);
+        const toggleChat = () => {
+            const isOpen = chatWindow.style.display === 'flex';
+            if (isOpen) {
+                chatWindow.style.display = 'none';
+                sessionStorage.setItem('chatState', 'closed');
+            } else {
+                chatWindow.style.display = 'flex';
+                sessionStorage.setItem('chatState', 'open');
+            }
+        };
 
-    const addMessageToChat = (message, sender) => {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${sender}-message`;
-        messageDiv.innerHTML = message;
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        chatButton.addEventListener('click', toggleChat);
+        closeChatButton.addEventListener('click', toggleChat);
 
-        // --- MODIFICAÇÃO 1: SALVAR MENSAGEM NO HISTÓRICO ---
-        // Pega o histórico atual ou cria um array vazio se não existir
-        const history = JSON.parse(sessionStorage.getItem('chatHistory')) || [];
-        // Adiciona a nova mensagem
-        history.push({ sender, message });
-        // Salva o histórico atualizado de volta no sessionStorage
-        sessionStorage.setItem('chatHistory', JSON.stringify(history));
-    };
+        const addMessageToChat = (message, sender) => {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            messageDiv.innerHTML = message;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    // --- BASE DE CONHECIMENTO (MASTER) ---
-    const knowledgeBase = [
-        // ... (TODA A SUA BASE DE CONHECIMENTO FICA AQUI, SEM ALTERAÇÕES) ...
-        // Tópicos Fundamentais
-        {
+            const history = JSON.parse(sessionStorage.getItem('chatHistory')) || [];
+            history.push({ sender, message });
+            sessionStorage.setItem('chatHistory', JSON.stringify(history));
+        };
+
+        const knowledgeBase = [
+            // ADICIONAMOS A NOVA INTELIGÊNCIA AQUI
+            {
+                name: "course_math_addition",
+                keywords: ['adição', 'adicao', 'matérias de adição', 'conteúdo de adição', 'tem adição', 'tem adicao', 'envolve adição'],
+                priority: 7.1, // Prioridade um pouco maior que a de matemática geral
+                answer: `<h4>Sobre Adição e Matemática no Curso:</h4><p>Sim, o curso de BSI utiliza conceitos matemáticos, onde a adição é um dos fundamentos. Você verá isso aplicado em matérias como <strong>Cálculo</strong>, <strong>Lógica Matemática</strong> e <strong>Estatística</strong>.</p><p>Essas disciplinas são importantes para desenvolver o raciocínio lógico que você usará para programar e resolver problemas complexos.</p>`,
+                more_info: `Não é preciso ser um especialista em matemática para ter sucesso. O curso foca em como usar a matemática como uma ferramenta para a tecnologia. O mais importante é a sua dedicação em aprender a lógica por trás dos problemas.`
+            },
+            // O RESTO DA BASE DE CONHECIMENTO CONTINUA ABAIXO
+            {
+                name: "is_it_hard",
+                keywords: ['é difícil', 'dificuldade', 'muita matemática', 'complicado', 'exatas', 'matemática', 'matematica', 'cálculo', 'calculo', 'puxado', 'exige muito', 'precisa ser gênio', 'tenho dificuldade com números', 'é osso'],
+                priority: 7,
+                answer: `<h4>Sobre a Dificuldade:</h4>O curso é desafiador, mas recompensador. Ele exige <strong>raciocínio lógico</strong>, que é desenvolvido em matérias como Cálculo e Lógica. Não é preciso ser um gênio, mas é preciso gostar de resolver problemas.`,
+                more_info: `O maior desafio não é a matemática em si, mas a <strong>abstração</strong>. Aprender a pensar como um computador e a estruturar soluções em código é uma habilidade nova. Com dedicação nas matérias iniciais, o resto do curso flui muito bem.`
+            },
+            // ... (coloque toda a sua knowledgeBase aqui) ...
+            {
+                 name: "greeting",
+                 keywords: ['oi', 'olá', 'ola', 'e aí', 'eae', 'bom dia', 'boa tarde', 'boa noite', 'opa', 'tudo bem', 'saudações', 'saudacoes', 'bão', 'blz', 'começar'],
+                 priority: 1,
+                 answer: 'Olá! Sou o assistente virtual do Portal BSI. Em que posso ajudar?'
+            },
+            {
+                 name: "thanks",
+                 keywords: ['obrigado', 'obg', 'valeu', 'vlw', 'agradecido', 'grato', 'show', 'entendi', 'beleza', 'certo', 'ok', 'ajudou muito'],
+                 priority: 1,
+                 answer: 'De nada! Fico feliz em ajudar. Se tiver qualquer outra dúvida, pode me chamar!'
+            },
+            {
             name: "what_is_bsi",
             keywords: ['o que é bsi', 'o que e bsi', 'sigla bsi', 'significa bsi', 'definição de bsi', 'explique bsi', 'bsi é o que', 'sistemas de informação é o que'],
             priority: 11,
@@ -475,419 +516,499 @@ document.addEventListener('DOMContentLoaded', () => {
             keywords: ['quem é você', 'quem e voce', 'vc é um robo', 'é uma ia', 'como você funciona', 'qual seu nome'],
             priority: 1,
             answer: 'Eu sou um assistente virtual programado para fornecer informações sobre o curso e a carreira de Sistemas de Informação.'
+        },
+        {
+            name: "what_is_bsi",
+            keywords: ['o que é bsi', 'o que e bsi', 'sigla bsi', 'significa bsi', 'definição de bsi', 'explique bsi', 'bsi é o que', 'sistemas de informação é o que'],
+            priority: 11,
+            answer: `<h4>O que é BSI?</h4>BSI é a sigla para <strong>Bacharelado em Sistemas de Informação</strong>.
+            <br><br>
+            É um curso superior que forma profissionais para analisar, projetar, desenvolver e gerenciar sistemas de software que resolvem problemas e otimizam processos em empresas e organizações. É a área que conecta o mundo da tecnologia com o mundo dos negócios.`,
+            more_info: `Aprofundando: O profissional de BSI não é apenas um programador. Ele aprende a entender as necessidades de um cliente, a planejar um projeto, a liderar uma equipe e a garantir que a tecnologia entregue valor real para a empresa. É uma das formações mais completas e versáteis da área de TI.`
+        },
+        // Tópicos de Curso
+        {
+            name: "course_structure",
+            keywords: ['quantas matérias', 'quantas materias', 'disciplinas por semestre', 'estrutura do curso', 'grade por semestre', 'período', 'matérias por período', 'quantas no semestre', 'quantas por semestre', 'são quantas no semestre'],
+            priority: 9.6,
+            answer: `<h4>Sobre a Estrutura do Curso:</h4>Geralmente, um semestre em BSI tem entre <strong>5 e 7 disciplinas</strong>. Os primeiros semestres focam em matérias de base (Cálculo, Lógica), enquanto os mais avançados focam em projetos práticos.`,
+            more_info: `A carga horária total do curso costuma girar em torno de 3.000 horas. Isso inclui as aulas, atividades complementares, estágio e o TCC. Você pode sempre consultar a grade curricular específica no site da universidade que tem interesse.`
+        },
+
+        // INTELIGÊNCIA ADICIONADA AQUI
+        {
+            name: "course_math_addition",
+            keywords: ['adição', 'adicao', 'matérias de adição', 'conteúdo de adição', 'tem adição', 'tem adicao', 'envolve adição'],
+            priority: 7,
+            answer: `<h4>Sobre Adição e Matemática no Curso:</h4><p>Sim, o curso de BSI utiliza conceitos matemáticos, onde a adição é um dos fundamentos. Você verá isso aplicado em matérias como <strong>Cálculo</strong>, <strong>Lógica Matemática</strong> e <strong>Estatística</strong>.</p><p>Essas disciplinas são importantes para desenvolver o raciocínio lógico que você usará para programar e resolver problemas complexos.</p>`,
+            more_info: `Não é preciso ser um especialista em matemática para ter sucesso. O curso foca em como usar a matemática como uma ferramenta para a tecnologia. O mais importante é a sua dedicação em aprender a lógica por trás dos problemas.`
+        },
+
+        {
+            name: "is_it_hard",
+            keywords: ['é difícil', 'dificuldade', 'muita matemática', 'complicado', 'exatas', 'matemática', 'matematica', 'cálculo', 'calculo', 'puxado', 'exige muito', 'precisa ser gênio', 'tenho dificuldade com números', 'é osso'],
+            priority: 7,
+            answer: `<h4>Sobre a Dificuldade:</h4>O curso é desafiador, mas recompensador. Ele exige <strong>raciocínio lógico</strong>, que é desenvolvido em matérias como Cálculo e Lógica. Não é preciso ser um gênio, mas é preciso gostar de resolver problemas.`,
+            more_info: `O maior desafio não é a matemática em si, mas a <strong>abstração</strong>. Aprender a pensar como um computador e a estruturar soluções em código é uma habilidade nova. Com dedicação nas matérias iniciais, o resto do curso flui muito bem.`
+        },
+        // ... (todo o resto do seu conhecimento continua aqui) ...
+        {
+            name: "thanks",
+            keywords: ['obrigado', 'obg', 'valeu', 'vlw', 'agradecido', 'grato', 'show', 'entendi', 'beleza', 'certo', 'ok', 'ajudou muito'],
+            priority: 1,
+            answer: 'De nada! Fico feliz em ajudar. Se tiver qualquer outra dúvida, pode me chamar!'
         }
-    ];
+        ];
 
-    // LÓGICA DA IA ... (sem alterações aqui)
-    const getAiResponse = (userInput) => {
-        const input = userInput.toLowerCase().trim().replace(/[?.,!]/g, '');
-        const words = input.split(' ').length;
-        let matches = [];
-
-        const followupKeywords = ['mais sobre', 'detalhe', 'aprofundar', 'e sobre isso', 'explique melhor', 'detalhes', 'fale mais', 'como assim'];
-        const contextualInterrogatives = ['quantas', 'quantos', 'por que', 'onde', 'como', 'quais são', 'quais os', 'e o', 'e a', 'e as', 'e os', 'só essas', 'apenas essas'];
-        
-        knowledgeBase.forEach(intent => {
-            const hasKeyword = intent.keywords.some(kw => {
-                const regex = new RegExp('\\b' + kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
-                return regex.test(input);
+        const getAiResponse = (userInput) => {
+            const input = userInput.toLowerCase().trim().replace(/[?.,!]/g, '');
+            let matches = [];
+            knowledgeBase.forEach(intent => {
+                const hasKeyword = intent.keywords.some(kw => new RegExp('\\b' + kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i').test(input));
+                if (hasKeyword) { matches.push(intent); }
             });
-            if (hasKeyword) { matches.push(intent); }
-        });
-        
-        if (matches.length > 0) {
-            const uniqueMatches = [...new Map(matches.map(item => [item.name, item])).values()];
-            uniqueMatches.sort((a, b) => b.priority - a.priority);
-            lastTopicDiscussed = uniqueMatches[0].name;
-            if (['greeting', 'thanks', 'who_are_you'].includes(lastTopicDiscussed)) { lastTopicDiscussed = null; }
-            if (uniqueMatches.length > 1 && !['greeting', 'thanks', 'who_are_you'].includes(lastTopicDiscussed)) {
-                let combinedResponse = "Ótima pergunta! Você mencionou mais de um tópico. Aqui estão as informações que encontrei:<br><br>";
-                uniqueMatches.forEach((match, index) => {
-                    combinedResponse += match.answer;
-                    if (index < uniqueMatches.length - 1) { combinedResponse += "<br><hr style='border-color: rgba(128,128,128,0.2); border-top: none;'><br>"; }
-                });
-                return combinedResponse;
+            if (matches.length > 0) {
+                matches.sort((a, b) => b.priority - a.priority);
+                lastTopicDiscussed = matches[0].name;
+                return matches[0].answer;
             }
-            return uniqueMatches[0].answer;
-        }
+            return `Desculpe, não consegui compreender sua pergunta.<br><br>Tente perguntar sobre:<br>- "Qual o <strong>salário</strong>?"<br>- "O curso tem muito <strong>cálculo</strong>?"`;
+        };
         
-        if ( (words <= 4 && contextualInterrogatives.some(kw => input.includes(kw))) || (followupKeywords.some(kw => input.includes(kw))) ) {
-            if (lastTopicDiscussed) {
-                if (lastTopicDiscussed.includes('languages') && (input.includes('quantas') || input.includes('só essas'))) {
-                    const specificIntent = knowledgeBase.find(i => i.name === 'languages_how_many');
-                    if(specificIntent) { lastTopicDiscussed = 'languages_how_many'; return specificIntent.answer; }
-                }
-                if (lastTopicDiscussed.includes('ai') && (input.includes('quantas') || input.includes('tipos'))) {
-                    const specificIntent = knowledgeBase.find(i => i.name === 'ai_types');
-                     if(specificIntent) { lastTopicDiscussed = 'ai_types'; return specificIntent.answer; }
-                }
-                const lastIntent = knowledgeBase.find(i => i.name === lastTopicDiscussed);
-                if (lastIntent && lastIntent.more_info) { return lastIntent.more_info; }
-            }
-        }
-        
-        lastTopicDiscussed = null;
-        return `Desculpe, não consegui compreender sua pergunta.<br><br>Tente perguntar sobre:<br>- "Qual o <strong>salário</strong> de um dev sênior?"<br>- "Como conseguir <strong>estágio</strong>?"<br>- "O curso tem muito <strong>cálculo</strong>?"`;
-    };
-
-    const handleUserInput = () => {
-        const message = chatInput.value;
-        if (message.trim() === '') return;
-
-        addMessageToChat(message, 'user');
-        chatInput.value = '';
-
-        // --- NOVO: Adiciona o indicador de "digitando..." ---
-        const typingIndicator = document.createElement('div');
-        typingIndicator.id = 'typing-indicator';
-        typingIndicator.className = 'message ai-message typing-indicator';
-        typingIndicator.innerHTML = '<span></span><span></span><span></span>';
-        chatMessages.appendChild(typingIndicator);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        // --- FIM DA ADIÇÃO ---
-
-        setTimeout(() => {
-            // --- NOVO: Remove o indicador antes de mostrar a resposta ---
-            const indicator = document.getElementById('typing-indicator');
-            if (indicator) {
-                indicator.remove();
-            }
-            // --- FIM DA REMOÇÃO ---
-
-            const aiResponse = getAiResponse(message);
-            addMessageToChat(aiResponse, 'ai');
-        }, 1200);
-    };
-
-    chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            handleUserInput();
-        }
-    });
-
-    // --- MODIFICAÇÃO 2: CARREGAR O HISTÓRICO E ESTADO DO CHAT AO INICIAR ---
-    const loadChatHistory = () => {
-        // Carrega o estado da janela (aberta/fechada)
-        const chatState = sessionStorage.getItem('chatState');
-        if (chatState === 'open') {
-            chatWindow.style.display = 'flex';
-        }
-
-        // Carrega o histórico de mensagens
-        const history = JSON.parse(sessionStorage.getItem('chatHistory'));
-        if (history && history.length > 0) {
-            // Limpa a mensagem padrão de "Olá!" para não duplicar
-            chatMessages.innerHTML = ''; 
-            history.forEach(item => {
-                // Recria as mensagens sem salvar de novo (apenas visualmente)
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${item.sender}-message`;
-                messageDiv.innerHTML = item.message;
-                chatMessages.appendChild(messageDiv);
-            });
+        const handleUserInput = () => {
+            const message = chatInput.value;
+            if (message.trim() === '') return;
+            addMessageToChat(message, 'user');
+            chatInput.value = '';
+            const typingIndicator = document.createElement('div');
+            typingIndicator.id = 'typing-indicator';
+            typingIndicator.className = 'message ai-message typing-indicator';
+            typingIndicator.innerHTML = '<span></span><span></span><span></span>';
+            chatMessages.appendChild(typingIndicator);
             chatMessages.scrollTop = chatMessages.scrollHeight;
-        } else {
-            // Se não houver histórico, limpa para garantir que não haja nada salvo
-            sessionStorage.removeItem('chatHistory');
-        }
-    };
-    
-    loadChatHistory(); // Executa a função assim que a página carrega
 
-});
+            setTimeout(() => {
+                const indicator = document.getElementById('typing-indicator');
+                if (indicator) indicator.remove();
+                const aiResponse = getAiResponse(message);
+                addMessageToChat(aiResponse, 'ai');
+            }, 1200);
+        };
 
-// --- NOVA FUNCIONALIDADE: SCROLL SUAVE PARA O TOPO NO INDEX ---
-document.addEventListener('DOMContentLoaded', () => {
-    // Procura pelo link só na página que o tem
-    const backToTopLink = document.getElementById('back-to-top-link');
+        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleUserInput(); });
 
-    if (backToTopLink) {
-        // Adiciona o evento de clique
-        backToTopLink.addEventListener('click', (event) => {
-            // Previne o comportamento padrão do link (que não funciona)
-            event.preventDefault();
-
-            // Encontra o container que realmente rola
-            const scrollContainer = document.querySelector('.scroll-container');
-
-            // Manda ele rolar para o topo com animação suave
-            if (scrollContainer) {
-                scrollContainer.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
+        const loadChatHistory = () => {
+            const chatState = sessionStorage.getItem('chatState');
+            if (chatState === 'open') chatWindow.style.display = 'flex';
+            const historyJSON = sessionStorage.getItem('chatHistory');
+            if (historyJSON) {
+                const history = JSON.parse(historyJSON);
+                if (history && history.length > 0) {
+                    chatMessages.innerHTML = '';
+                    history.forEach(item => {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = `message ${item.sender}-message`;
+                        messageDiv.innerHTML = item.message;
+                        chatMessages.appendChild(messageDiv);
+                    });
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
             }
-        });
-    }
-});
-
-// --- LÓGICA DE VALIDAÇÃO DO FORMULÁRIO DE CADASTRO ---
-
-// Espera o DOM carregar para rodar o script
-document.addEventListener('DOMContentLoaded', () => {
-    
-    // Procura pelo formulário de cadastro na página. Se não achar, não faz nada.
-    const form = document.getElementById('registration-form');
-    if (!form) {
-        return;
+        };
+        loadChatHistory();
     }
 
-    // Pega todos os campos e spans de erro que vamos usar
-    const nameInput = document.getElementById('name');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const confirmPasswordInput = document.getElementById('confirm-password');
-
-    const nameError = document.getElementById('name-error');
-    const emailError = document.getElementById('email-error');
-    const passwordError = document.getElementById('password-error');
-    const confirmPasswordError = document.getElementById('confirm-password-error');
-
-    // Função para mostrar erro
-    const showError = (input, errorElement, message) => {
-        input.classList.add('invalid');
-        errorElement.textContent = message;
-        errorElement.classList.add('active');
-    };
-
-    // Função para limpar erro
-    const clearError = (input, errorElement) => {
-        input.classList.remove('invalid');
-        errorElement.classList.remove('active');
-        errorElement.textContent = '';
-    };
-    
-    // Funções de validação para cada campo
-    const validateName = () => {
-        if (nameInput.value.trim() === '') {
-            showError(nameInput, nameError, 'O campo nome é obrigatório.');
-            return false;
-        }
-        clearError(nameInput, nameError);
-        return true;
-    };
-
-    const validateEmail = () => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(emailInput.value.trim())) {
-            showError(emailInput, emailError, 'Por favor, insira um email válido.');
-            return false;
-        }
-        clearError(emailInput, emailError);
-        return true;
-    };
-
-    const validatePassword = () => {
-        if (passwordInput.value.length < 8) {
-            showError(passwordInput, passwordError, 'A senha deve ter no mínimo 8 caracteres.');
-            return false;
-        }
-        clearError(passwordInput, passwordError);
-        return true;
-    };
-
-    const validateConfirmPassword = () => {
-        if (passwordInput.value !== confirmPasswordInput.value) {
-            showError(confirmPasswordInput, confirmPasswordError, 'As senhas não coincidem.');
-            return false;
-        }
-        if (confirmPasswordInput.value.trim() === '') {
-            showError(confirmPasswordInput, confirmPasswordError, 'Confirme sua senha.');
-            return false;
-        }
-        clearError(confirmPasswordInput, confirmPasswordError);
-        return true;
-    };
-
-    // Validação em tempo real enquanto o usuário digita
-    nameInput.addEventListener('input', validateName);
-    emailInput.addEventListener('input', validateEmail);
-    passwordInput.addEventListener('input', validatePassword);
-    confirmPasswordInput.addEventListener('input', validateConfirmPassword);
-    // Também valida a confirmação quando a senha principal muda
-    passwordInput.addEventListener('input', validateConfirmPassword);
-
-
-    // Validação final quando o formulário é enviado
-    form.addEventListener('submit', (event) => {
-        // Impede o envio do formulário para o servidor
-        event.preventDefault();
-
-        // Roda todas as validações
-        const isNameValid = validateName();
-        const isEmailValid = validateEmail();
-        const isPasswordValid = validatePassword();
-        const isConfirmPasswordValid = validateConfirmPassword();
-
-       // Se tudo estiver correto, podemos prosseguir
-        if (isNameValid && isEmailValid && isPasswordValid && isConfirmPasswordValid) {
-            // SUBSTITUÍMOS O ALERT PELA LINHA ABAIXO:
-            window.location.href = 'perfil.html'; // Redireciona o usuário para a página de perfil
-
-            // No futuro, o envio para o backend viria antes do redirecionamento.
-            form.reset(); 
-        }
-    });
-});
-
-// --- LÓGICA DO MODAL DE EDIÇÃO DE PERFIL ---
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Seleciona os elementos do DOM
-    const modal = document.getElementById('edit-profile-modal');
-    const openModalBtn = document.getElementById('open-edit-modal-btn');
-    const closeModalBtn = document.getElementById('close-modal-btn');
-    const editForm = document.getElementById('edit-profile-form');
-
-    // Se os botões não existirem nesta página, o script para aqui.
-    if (!modal || !openModalBtn || !closeModalBtn) {
-        return;
-    }
-
-    // Função para abrir o modal
-    const openModal = () => {
-        modal.classList.add('active');
-    };
-
-    // Função para fechar o modal
-    const closeModal = () => {
-        modal.classList.remove('active');
-    };
-
-    // Event Listeners
-    openModalBtn.addEventListener('click', openModal);
-    closeModalBtn.addEventListener('click', closeModal);
-
-    // Fecha o modal se o usuário clicar no fundo (overlay)
-    modal.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            closeModal();
-        }
-    });
-
-    // Lida com o envio do formulário
-    editForm.addEventListener('submit', (event) => {
-        event.preventDefault(); // Impede o recarregamento da página
-        alert('Informações salvas com sucesso! (Simulação)');
-        closeModal();
-    });
-});
-
-// --- LÓGICA DE ESTADO DE LOGIN (FAKE AUTH) ---
-
-document.addEventListener('DOMContentLoaded', () => {
-
-    // 1. LÓGICA PARA SIMULAR O LOGIN
-    // --- Na página de cadastro ---
+    // --- LÓGICA DE VALIDAÇÃO DO FORMULÁRIO DE CADASTRO (SÓ NA PÁGINA DE CADASTRO) ---
     const registrationForm = document.getElementById('registration-form');
     if (registrationForm) {
-        registrationForm.addEventListener('submit', (e) => {
-            // A validação já ocorre em outro script, aqui apenas simulamos o login
-            if (e.defaultPrevented) { // Se o formulário for válido
-                sessionStorage.setItem('isLoggedIn', 'true');
-                // O redirecionamento para 'perfil.html' já acontece no outro script
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm-password');
+        const nameError = document.getElementById('name-error');
+        const emailError = document.getElementById('email-error');
+        const passwordError = document.getElementById('password-error');
+        const confirmPasswordError = document.getElementById('confirm-password-error');
+
+        const showError = (input, errorElement, message) => { input.classList.add('invalid'); errorElement.textContent = message; errorElement.classList.add('active'); };
+        const clearError = (input, errorElement) => { input.classList.remove('invalid'); errorElement.classList.remove('active'); errorElement.textContent = ''; };
+        const validateName = () => { if (nameInput.value.trim() === '') { showError(nameInput, nameError, 'O campo nome é obrigatório.'); return false; } clearError(nameInput, nameError); return true; };
+        const validateEmail = () => { const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; if (!emailRegex.test(emailInput.value.trim())) { showError(emailInput, emailError, 'Por favor, insira um email válido.'); return false; } clearError(emailInput, emailError); return true; };
+        const validatePassword = () => { if (passwordInput.value.length < 8) { showError(passwordInput, passwordError, 'A senha deve ter no mínimo 8 caracteres.'); return false; } clearError(passwordInput, passwordError); return true; };
+        const validateConfirmPassword = () => { if (passwordInput.value !== confirmPasswordInput.value) { showError(confirmPasswordInput, confirmPasswordError, 'As senhas não coincidem.'); return false; } if (confirmPasswordInput.value.trim() === '') { showError(confirmPasswordInput, confirmPasswordError, 'Confirme sua senha.'); return false; } clearError(confirmPasswordInput, confirmPasswordError); return true; };
+
+        nameInput.addEventListener('input', validateName);
+        emailInput.addEventListener('input', validateEmail);
+        passwordInput.addEventListener('input', () => { validatePassword(); validateConfirmPassword(); });
+        confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+        
+        registrationForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const isFormValid = validateName() && validateEmail() && validatePassword() && validateConfirmPassword();
+            if (isFormValid) {
+                const userData = { name: nameInput.value, email: emailInput.value, password: passwordInput.value };
+                
+// ...
+fetch('http://localhost:3000/api/cadastro', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(userData)
+})
+.then(response => {
+    // --- INÍCIO DA MODIFICAÇÃO ---
+    // Agora, vamos primeiro verificar se a resposta foi bem-sucedida.
+    // Se não for (ex: erro 409), nós lemos a mensagem de erro do servidor.
+    if (!response.ok) {
+        // Pega a mensagem de erro do corpo da resposta e a rejeita
+        return response.json().then(err => { throw new Error(err.message); });
+    }
+    // Se a resposta for bem-sucedida, continua normalmente.
+    return response.json();
+    // --- FIM DA MODIFICAÇÃO ---
+})
+.then(data => {
+    console.log('Resposta do servidor:', data); 
+    alert('Cadastro efetuado com sucesso!');
+    sessionStorage.setItem('isLoggedIn', 'true');
+    window.location.href = 'perfil.html';
+})
+.catch(error => {
+    // Agora, o 'error.message' conterá a mensagem específica do servidor!
+    console.error('Erro:', error);
+    alert(`Erro no cadastro: ${error.message}`);
+});
             }
         });
     }
 
-    // --- Na página de login (simulação simples) ---
-    const loginForm = document.querySelector('.auth-form:not(#registration-form)');
-    if (loginForm && window.location.pathname.includes('login.html')) {
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
+    
+    
+
+// --- LÓGICA DE LOGIN (SÓ NA PÁGINA DE LOGIN) ---
+const loginForm = document.querySelector('.auth-form:not(#registration-form)');
+if (loginForm && window.location.pathname.includes('login.html')) {
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        const loginData = {
+            email: emailInput.value,
+            password: passwordInput.value
+        };
+
+        fetch('http://localhost:3000/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(loginData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw new Error(err.message); });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Resposta do servidor:', data);
+            alert('Login efetuado com sucesso!');
             sessionStorage.setItem('isLoggedIn', 'true');
+            // No futuro, poderíamos salvar os dados do usuário aqui também
+            sessionStorage.setItem('user', JSON.stringify(data.user));
             window.location.href = 'perfil.html';
+        })
+        .catch(error => {
+            console.error('Erro no login:', error);
+            alert(`Erro no login: ${error.message}`);
         });
-    }
+    });
+}
+    
 
-    // 2. LÓGICA PARA ATUALIZAR O HEADER
-    const checkLoginState = () => {
-        const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+   // Em script.js, SUBSTITUA este bloco inteiro:
 
-        const loginLink = document.querySelector('.login-link-nav');
-        const profileLink = document.querySelector('.profile-link-nav');
-        const logoutBtn = document.getElementById('logout-btn');
+// --- LÓGICA DA PÁGINA DE PERFIL (PERSONALIZAÇÃO + MODAIS) ---
+const profileContainer = document.querySelector('.profile-container');
+if (profileContainer) {
+    // --- Elementos da Página ---
+    const profileNameElement = document.querySelector('.profile-details h1');
+    const profileEmailElement = document.querySelector('.profile-details .user-email');
+    const memberSinceElement = document.getElementById('member-since'); // O elemento da data
 
-        if (isLoggedIn) {
-            if (loginLink) loginLink.style.display = 'none';
-            if (profileLink) profileLink.style.display = 'inline-block';
-            if (logoutBtn) logoutBtn.style.display = 'inline-block';
-        } else {
-            if (loginLink) loginLink.style.display = 'inline-block';
-            if (profileLink) profileLink.style.display = 'none';
-            if (logoutBtn) logoutBtn.style.display = 'none';
+    // --- Função para preencher todos os dados do perfil na página ---
+    const populateProfileData = (user) => {
+        if (profileNameElement) profileNameElement.textContent = user.name;
+        if (profileEmailElement) profileEmailElement.textContent = user.email;
+
+        // Lógica para formatar e exibir a data
+        if (memberSinceElement && user.created_at) {
+            const date = new Date(user.created_at);
+            const formattedDate = date.toLocaleDateString('pt-BR', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            memberSinceElement.textContent = `Membro desde: ${formattedDate}`;
         }
     };
 
-    // 3. LÓGICA DE LOGOUT
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            sessionStorage.removeItem('isLoggedIn');
-            alert('Você saiu da sua conta.');
-            window.location.href = 'index.html';
+    const loadUserProgress = (userId) => {
+        const progressCardNumber = document.querySelector('.stat-card:nth-child(1) .stat-number');
+        if (!progressCardNumber) return;
+
+        fetch(`http://localhost:3000/api/progresso/${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                progressCardNumber.textContent = `${data.percentage}%`;
+            })
+            .catch(error => {
+                console.error("Erro ao buscar progresso:", error);
+                progressCardNumber.textContent = 'N/A';
+            });
+    };
+
+    
+
+    // 1. PERSONALIZAÇÃO INICIAL DO PERFIL
+    const userDataString = sessionStorage.getItem('user');
+    if (userDataString) {
+        const user = JSON.parse(userDataString);
+        populateProfileData(user); // Chama a função para preencher tudo
+        loadUserProgress(user.id);
+    } else {
+        alert("Sessão não encontrada. Por favor, faça o login novamente.");
+        window.location.href = 'login.html';
+    }
+
+    // 2. LÓGICA DO MODAL DE EDIÇÃO DE PERFIL
+    const openEditModalBtn = document.getElementById('open-edit-modal-btn');
+    const modal = document.getElementById('edit-profile-modal');
+    if (openEditModalBtn && modal) {
+        // ... (o código do modal de edição de perfil continua o mesmo) ...
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const editForm = document.getElementById('edit-profile-form');
+        const editNameInput = document.getElementById('edit-name');
+        const editEmailInput = document.getElementById('edit-email');
+
+        const openModal = () => {
+            const currentUser = JSON.parse(sessionStorage.getItem('user'));
+            editNameInput.value = currentUser.name;
+            editEmailInput.value = currentUser.email;
+            modal.classList.add('active');
+        };
+        const closeModal = () => modal.classList.remove('active');
+        
+        openEditModalBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (event) => { if (event.target === modal) closeModal(); });
+
+        editForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const currentUser = JSON.parse(sessionStorage.getItem('user'));
+            const updatedData = {
+                id: currentUser.id,
+                name: editNameInput.value,
+                email: editEmailInput.value
+            };
+
+            fetch('http://localhost:3000/api/perfil', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData)
+            })
+            .then(response => {
+                if (!response.ok) return response.json().then(err => { throw new Error(err.message); });
+                return response.json();
+            })
+            .then(data => {
+                alert(data.message);
+                sessionStorage.setItem('user', JSON.stringify(data.user));
+                populateProfileData(data.user);
+                closeModal();
+            })
+            .catch(error => {
+                console.error('Erro ao atualizar perfil:', error);
+                alert(`Erro: ${error.message}`);
+            });
         });
     }
 
-    // Roda a verificação em TODAS as páginas assim que carregam
-    checkLoginState();
-});
 
-// --- LÓGICA DO MODAL DE ALTERAR SENHA ---
+};
+// ...
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Seleciona os elementos específicos deste modal
-    const passwordModal = document.getElementById('change-password-modal');
-    const openPasswordModalBtn = document.getElementById('open-change-password-modal-btn');
+    // --- CORREÇÃO APLICADA AQUI ---
+    // 2. LÓGICA DO MODAL DE EDIÇÃO DE PERFIL
+    // A variável é declarada aqui
+    const openEditModalBtn = document.getElementById('open-edit-modal-btn');
+    const modal = document.getElementById('edit-profile-modal');
+    
+    // E só usamos a variável DEPOIS de verificar se ela não é nula
+    if (openEditModalBtn && modal) {
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const editForm = document.getElementById('edit-profile-form');
+        const editNameInput = document.getElementById('edit-name');
+        const editEmailInput = document.getElementById('edit-email');
+
+        const openModal = () => {
+            const currentUser = JSON.parse(sessionStorage.getItem('user'));
+            editNameInput.value = currentUser.name;
+            editEmailInput.value = currentUser.email;
+            modal.classList.add('active');
+        };
+        const closeModal = () => modal.classList.remove('active');
+        
+        // Agora, este addEventListener é seguro, pois está dentro do 'if'
+        openEditModalBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (event) => { if (event.target === modal) closeModal(); });
+
+        editForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const currentUser = JSON.parse(sessionStorage.getItem('user'));
+            const updatedData = {
+                id: currentUser.id,
+                name: editNameInput.value,
+                email: editEmailInput.value
+            };
+
+            fetch('http://localhost:3000/api/perfil', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData)
+            })
+            .then(response => {
+                if (!response.ok) return response.json().then(err => { throw new Error(err.message); });
+                return response.json();
+            })
+            .then(data => {
+                alert(data.message);
+                sessionStorage.setItem('user', JSON.stringify(data.user));
+                populateProfileData(data.user);
+                closeModal();
+            })
+            .catch(error => {
+                console.error('Erro ao atualizar perfil:', error);
+                alert(`Erro: ${error.message}`);
+            });
+        });
+    }
+
+    // Em script.js, SUBSTITUA o bloco do modal de senha por este:
+
+// 3. LÓGICA DO MODAL DE ALTERAR SENHA (AGORA COM FETCH)
+const openPasswordModalBtn = document.getElementById('open-change-password-modal-btn');
+const passwordModal = document.getElementById('change-password-modal');
+if (openPasswordModalBtn && passwordModal) {
     const closePasswordModalBtn = document.getElementById('close-password-modal-btn');
     const changePasswordForm = document.getElementById('change-password-form');
 
-    // Se os elementos não existirem nesta página, o script para.
-    if (!passwordModal || !openPasswordModalBtn || !closePasswordModalBtn) {
-        return;
-    }
-
-    // Função para abrir o modal de senha
-    const openPasswordModal = () => {
-        passwordModal.classList.add('active');
-    };
-
-    // Função para fechar o modal de senha
+    const openPasswordModal = () => passwordModal.classList.add('active');
     const closePasswordModal = () => {
+        changePasswordForm.reset(); // Limpa o formulário ao fechar
         passwordModal.classList.remove('active');
     };
-
-    // Event Listeners
+    
     openPasswordModalBtn.addEventListener('click', openPasswordModal);
     closePasswordModalBtn.addEventListener('click', closePasswordModal);
+    passwordModal.addEventListener('click', (event) => { if (event.target === passwordModal) closePasswordModal(); });
 
-    // Fecha o modal se o usuário clicar no fundo (overlay)
-    passwordModal.addEventListener('click', (event) => {
-        if (event.target === passwordModal) {
-            closePasswordModal();
-        }
-    });
-
-    // Lida com o envio do formulário de alteração de senha
     changePasswordForm.addEventListener('submit', (event) => {
-        event.preventDefault(); // Impede o recarregamento da página
+        event.preventDefault();
+        const currentUser = JSON.parse(sessionStorage.getItem('user'));
+        const currentPasswordInput = document.getElementById('current-password');
+        const newPasswordInput = document.getElementById('new-password');
+        const confirmNewPasswordInput = document.getElementById('confirm-new-password');
 
-        // Simples validação para o exemplo
-        const newPassword = document.getElementById('new-password').value;
-        const confirmNewPassword = document.getElementById('confirm-new-password').value;
-
-        if (newPassword !== confirmNewPassword) {
-            alert('Erro: As novas senhas não coincidem!');
-            return;
- L       }
-        if (newPassword.length < 8) {
-            alert('Erro: A nova senha deve ter no mínimo 8 caracteres.');
-            return;
+        // Validação no frontend para feedback rápido
+        if (newPasswordInput.value !== confirmNewPasswordInput.value) {
+            return alert('Erro: As novas senhas não coincidem!');
+        }
+        if (newPasswordInput.value.length < 8) {
+            return alert('Erro: A nova senha deve ter no mínimo 8 caracteres.');
         }
 
-        alert('Senha alterada com sucesso! (Simulação)');
-        changePasswordForm.reset(); // Limpa o formulário
-        closePasswordModal(); // Fecha o modal
+        const passwordData = {
+            id: currentUser.id,
+            currentPassword: currentPasswordInput.value,
+            newPassword: newPasswordInput.value
+        };
+
+        fetch('http://localhost:3000/api/perfil/senha', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(passwordData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw new Error(err.message); });
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message); // "Senha alterada com sucesso!"
+            closePasswordModal();
+        })
+        .catch(error => {
+            console.error('Erro ao alterar senha:', error);
+            alert(`Erro: ${error.message}`); // Ex: "Senha atual incorreta."
+        });
     });
-});
+    
+    // 4. LÓGICA PARA DELETAR A CONTA
+const deleteBtn = document.getElementById('delete-account-btn');
+if (deleteBtn) {
+    deleteBtn.addEventListener('click', () => {
+        // Pede confirmação ao usuário antes de prosseguir
+        const isConfirmed = confirm('Você tem certeza que deseja deletar sua conta? Esta ação é permanente e não pode ser desfeita.');
+
+        if (isConfirmed) {
+            const currentUser = JSON.parse(sessionStorage.getItem('user'));
+
+            fetch(`http://localhost:3000/api/perfil/${currentUser.id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.message); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert(data.message); // "Conta deletada com sucesso!"
+                
+                // Limpa a sessão e desloga o usuário
+                sessionStorage.removeItem('isLoggedIn');
+                sessionStorage.removeItem('user');
+                
+                // Redireciona para a página inicial
+                window.location.href = 'index.html';
+            })
+            .catch(error => {
+                console.error('Erro ao deletar conta:', error);
+                alert(`Erro: ${error.message}`);
+            });
+        }
+    });
+}
+}
+}
+);
+
+
+    // --- LÓGICA DO MENU HAMBURGER (RODA EM TODAS AS PÁGINAS) ---
+    const mobileNavToggle = document.getElementById('mobile-nav-toggle');
+    const nav = document.querySelector('header nav');
+
+    if (mobileNavToggle && nav) {
+        mobileNavToggle.addEventListener('click', () => {
+            document.body.classList.toggle('nav-open');
+        });
+
+        // Opcional: Fecha o menu se um link for clicado
+        nav.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A') {
+                document.body.classList.remove('nav-open');
+            }
+        });
+    }

@@ -1,0 +1,156 @@
+/* trilha.css */
+
+/* ... (Estilos da barra de progresso continuam os mesmos) ... */
+
+.jornadas-container {
+    width: 100%;
+}
+
+.jornada-card {
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.jornada-card h3 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.jornada-card p {
+    margin-bottom: 2rem;
+    color: var(--secondary-color-light);
+}
+
+html.dark-mode .jornada-card p {
+    color: var(--secondary-color-dark);
+}
+
+.mission-list {
+    list-style: none;
+    padding: 0;
+}
+
+.mission-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    background-color: rgba(0,0,0,0.03);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+html.dark-mode .mission-item {
+    background-color: rgba(255,255,255,0.05);
+}
+
+.mission-item:hover {
+    background-color: rgba(0,0,0,0.07);
+}
+html.dark-mode .mission-item:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.mission-item input[type="checkbox"] {
+    /* Esconde o checkbox original */
+    display: none;
+}
+
+.mission-item label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* Cria o nosso checkbox personalizado */
+.mission-item label::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--primary-color-light);
+    border-radius: 50%; /* Círculo */
+    margin-right: 15px;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+html.dark-mode .mission-item label::before {
+    border-color: var(--primary-color-dark);
+}
+
+/* Estilo quando está marcado */
+.mission-item input[type="checkbox"]:checked + label::before {
+    background-color: var(--accent-color-light);
+    border-color: var(--accent-color-light);
+}
+html.dark-mode .mission-item input[type="checkbox"]:checked + label::before {
+    background-color: var(--accent-color-dark);
+    border-color: var(--accent-color-dark);
+}
+
+/* Tacha o texto quando está marcado */
+.mission-item input[type="checkbox"]:checked + label {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.trail-footer {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* Estilos do Modal de Aprendizado */
+.modal-body {
+    padding-top: 1rem;
+}
+.modal-section {
+    margin-bottom: 1.5rem;
+}
+.modal-section h4 {
+    font-size: 1.2rem;
+    color: var(--primary-color-light);
+    margin-bottom: 0.5rem;
+}
+html.dark-mode .modal-section h4 {
+    color: var(--primary-color-dark);
+}
+.modal-section ol {
+    padding-left: 20px;
+}
+.modal-section ol li {
+    margin-bottom: 0.5rem;
+}
+.modal-section code {
+    background-color: rgba(0,0,0,0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', Courier, monospace;
+}
+html.dark-mode .modal-section code {
+    background-color: rgba(255,255,255,0.15);
+}
+.modal-section.tip {
+    background-color: rgba(255, 235, 59, 0.1);
+    border-left: 4px solid #ffeb3b;
+    padding: 1rem;
+    border-radius: 4px;
+}
+.svg-container {
+    background-color: rgba(0,0,0,0.05);
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+html.dark-mode .svg-container {
+    background-color: rgba(255,255,255,0.03);
+}
+.svg-container svg {
+    max-width: 100%;
+    height: auto;
+}

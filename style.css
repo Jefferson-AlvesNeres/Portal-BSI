@@ -1246,3 +1246,353 @@ html.dark-mode .logout-link-nav {
     color: #dc3545;
     border-color: rgba(220, 53, 69, 0.3);
 }
+
+/* --- ESTILOS GERAIS PARA O MENU HAMBURGER E RESPONSIVIDADE --- */
+
+/* 1. Botão Hamburger (escondido no desktop) */
+#mobile-nav-toggle {
+    display: none; /* Escondido por padrão */
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 3001; /* Fica na frente do menu */
+}
+
+#mobile-nav-toggle .bar {
+    display: block;
+    width: 25px;
+    height: 3px;
+    margin: 5px auto;
+    background-color: var(--text-color-light);
+    transition: all 0.3s ease-in-out;
+}
+html.dark-mode #mobile-nav-toggle .bar {
+    background-color: var(--text-color-dark);
+}
+
+/* 2. Fluid Typography (fontes que se ajustam automaticamente) */
+h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
+h3 { font-size: clamp(1.5rem, 3.5vw, 1.8rem); }
+p, li { font-size: clamp(0.95rem, 2.5vw, 1.1rem); }
+
+
+/* --- Media Query: A MÁGICA PARA TELAS PEQUENAS (até 900px) --- */
+@media (max-width: 900px) {
+
+    /* 3. Mostra o botão hamburger e esconde a navegação do desktop */
+    #mobile-nav-toggle {
+        display: block;
+    }
+    
+    header nav {
+        /* Prepara o menu para ser o painel flutuante */
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 70%;
+        max-width: 320px;
+        height: 100vh;
+        
+        /* O fundo de vidro que já usamos */
+        background: var(--glass-bg-light);
+        backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+        border-left: 1px solid var(--glass-border-light);
+        
+        /* Esconde o menu fora da tela por padrão */
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 3000;
+    }
+    html.dark-mode header nav {
+        background: var(--glass-bg-dark);
+        border-left: 1px solid var(--glass-border-dark);
+    }
+
+    /* 4. Mostra o menu quando o body tiver a classe 'nav-open' */
+    body.nav-open header nav {
+        transform: translateX(0);
+    }
+    
+    /* Animação do ícone hamburger para um "X" */
+    body.nav-open #mobile-nav-toggle .bar:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+    body.nav-open #mobile-nav-toggle .bar:nth-child(2) {
+        opacity: 0;
+    }
+    body.nav-open #mobile-nav-toggle .bar:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
+    /* 5. Organiza os links do menu na vertical */
+    header nav ul {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+
+    header nav ul li a {
+        font-size: 1.5rem;
+    }
+}
+
+/* --- RESTAURAÇÃO DO LAYOUT DO HEADER PARA TELAS GRANDES --- */
+
+header {
+    /* Garante que os itens do header fiquem alinhados horizontalmente */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 20px; /* Espaçamento entre logo, nav e ações */
+}
+
+header nav {
+    /* Restaura o estado padrão da navegação no desktop */
+    position: static;      /* Remove o 'position: fixed' do mobile */
+    transform: none;       /* Remove o 'translateX' que esconde o menu */
+    height: auto;          /* Altura automática */
+    width: auto;           /* Largura automática */
+    background: none;      /* Remove o fundo de vidro */
+    backdrop-filter: none; /* Remove o blur */
+    border: none;          /* Remove a borda */
+}
+
+header nav ul {
+    /* A regra mais importante: coloca os links em linha novamente */
+    display: flex;
+    flex-direction: row; /* Garante a direção horizontal */
+    gap: 25px;           /* Espaçamento entre os links */
+}
+
+/* Garante que o botão hamburger só apareça em telas pequenas */
+#mobile-nav-toggle {
+    display: none;
+}
+
+/* O media query continua a ser o responsável por ativar o modo mobile */
+@media (max-width: 900px) {
+    #mobile-nav-toggle {
+        display: block; /* Mostra o hamburger */
+    }
+    
+    header nav {
+        display: none; /* Esconde a navegação horizontal */
+    }
+
+    /* Estilos para o menu quando ele está aberto no mobile */
+    body.nav-open header nav {
+        display: flex;
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 70%;
+        max-width: 320px;
+        height: 100vh;
+        background: var(--glass-bg-light);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-left: 1px solid var(--glass-border-light);
+        transform: translateX(0);
+        align-items: center;
+        justify-content: center;
+        z-index: 3000;
+    }
+
+    html.dark-mode body.nav-open header nav {
+        background: var(--glass-bg-dark);
+        border-left: 1px solid var(--glass-border-dark);
+    }
+
+    body.nav-open header nav ul {
+        flex-direction: column;
+    }
+}
+
+/* --- AJUSTES FINOS DE RESPONSIVIDADE PARA O HERO SECTION --- */
+
+@media (max-width: 900px) {
+
+    /* 1. Reorganiza o layout para empilhar a logo e o texto */
+    .hero-content-wrapper {
+        flex-direction: column; /* Muda de lado a lado para cima e baixo */
+        gap: 20px; /* Reduz o espaçamento entre a logo e o texto */
+    }
+    
+    .hero-text {
+        text-align: center; /* Centraliza o texto quando ele está empilhado */
+    }
+
+    /* 2. Reduz o tamanho geral do banner (fica "menor para cima") */
+    .hero-section {
+        padding-top: 2.5rem;
+        padding-bottom: 2.5rem;
+        min-height: auto; /* Permite que a seção encolha verticalmente */
+    }
+
+    /* 3. Redimensiona o logo e o título para se adaptarem à tela */
+    .hero-logo {
+        /* A altura do logo agora se ajusta, com um mínimo e máximo */
+        height: clamp(70px, 18vw, 90px);
+    }
+
+    .hero-text h2 {
+        /* O título também se ajusta, ficando menor em telas pequenas */
+        font-size: clamp(1.6rem, 5vw, 2.2rem);
+    }
+}
+
+/* --- AJUSTE PARA HEADER FULL-WIDTH (TELA CHEIA) --- */
+
+/* 1. Faz o header ocupar 100% da largura e remove limitações */
+header, #index-header {
+    width: 100%;
+    max-width: none; /* Remove a largura máxima */
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 0; /* Remove as bordas arredondadas para um visual limpo */
+    padding: 0 1rem; /* Adiciona um padding lateral para segurança em telas pequenas */
+}
+
+/* 2. Cria a "caixa de dentro" que vai centralizar o conteúdo */
+.header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 960px; /* A mesma largura máxima do seu <main> */
+    margin: 0 auto;   /* Centraliza a caixa de dentro */
+    padding: 1rem 0; /* Mantém o padding vertical que o header tinha */
+}
+
+/* 3. Ajuste fino para o menu hamburger no mobile */
+@media (max-width: 900px) {
+    .header-inner {
+        padding: 0.5rem 0; /* Reduz um pouco o padding vertical no mobile */
+    }
+}
+
+/* --- ESTILO FINAL E GARANTIDO PARA HEADER FULL-WIDTH --- */
+
+/* Força o header a ter 100% de largura e remove qualquer limitação */
+header, #index-header {
+    width: 100%;
+    max-width: none; /* Remove a largura máxima */
+    border-radius: 0;  /* Remove bordas arredondadas */
+    
+    /* Aplica o efeito de vidro diretamente na barra de 100% */
+    background: var(--glass-bg-light);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--glass-border-light);
+    
+    /* Padding de segurança para não colar o conteúdo nas bordas */
+    padding-left: 1rem;
+    padding-right: 1rem;
+    
+    /* Garante que ele fique fixo no topo ao rolar */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* Ajuste para o modo escuro */
+html.dark-mode header, html.dark-mode #index-header {
+    background: var(--glass-bg-dark);
+    border-bottom: 1px solid var(--glass-border-dark);
+}
+
+/* Centraliza o conteúdo dentro do header full-width */
+.header-inner {
+    width: 100%;
+    max-width: 960px; /* Alinha com a largura do <main> */
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+}
+
+/* --- AJUSTES FINAIS DE RESPONSIVIDADE E VISIBILIDADE --- */
+
+/* Fundo do painel mais escuro no modo escuro */
+html.dark-mode .glass-panel {
+    background: rgba(10, 25, 47, 0.85); /* Aumentamos a opacidade de 0.75 para 0.85 */
+}
+
+/* Deixa o modal mais responsivo */
+@media (max-width: 600px) {
+    .modal-content {
+        padding: 1.5rem;
+        max-width: 95vw;
+    }
+    .modal-section h4 {
+        font-size: 1.1rem;
+    }
+    .modal-section p, .modal-section li {
+        font-size: 0.9rem;
+    }
+}
+
+/* --- ESTILO PARA A NOVA SEÇÃO DE CTA (SÓ VISÍVEL QUANDO LOGADO) --- */
+
+#cta-section {
+    /* Define o fundo e a borda com cores que se destacam */
+    background: rgba(22, 78, 99, 0.7); /* Azul escuro translúcido */
+    border: 2px solid var(--accent-color-light); /* Borda verde */
+    margin-bottom: 2.5rem;
+    padding: 3rem; /* Aumenta o padding para dar mais destaque */
+}
+
+html.dark-mode #cta-section {
+    background: rgba(0, 0, 0, 0.85);
+    border-color: var(--accent-color-dark);
+}
+
+#cta-section h3 {
+    /* Deixa o título mais chamativo */
+    color: var(--accent-color-light) !important; 
+    border-bottom: 2px solid var(--primary-color-light) !important;
+    padding-bottom: 0.8rem;
+    margin-bottom: 1rem !important;
+}
+
+html.dark-mode #cta-section h3 {
+    color: var(--accent-color-dark) !important;
+    border-bottom-color: var(--primary-color-dark) !important;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 15px 30px;
+    margin-top: 1.5rem;
+    background-color: var(--accent-color-light); /* Fundo verde (destaque) */
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    transition: all 0.3s ease;
+}
+
+html.dark-mode .cta-button {
+    background-color: var(--accent-color-dark);
+    color: var(--background-color-dark); /* Texto escuro no botão de destaque */
+    box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+}
+
+.cta-button:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.6);
+}
+
+html.dark-mode .cta-button:hover {
+    box-shadow: 0 8px 20px rgba(79, 209, 197, 0.6);
+}

@@ -14,18 +14,35 @@
     </div>
 
     <header>
+    <div class="header-inner">
+        
         <a href="index.html" class="logo-link">
             <img src="logo.svg" alt="Logo Guia BSI" class="logo-img">
         </a>
+
         <nav>
             <ul>
                 <li><a href="index.html">Início</a></li>
                 <li><a href="sobre-bsi.html">O que é BSI?</a></li>
+                <li><a href="mercado-trabalho.html">Mercado de Trabalho</a></li>
+                <li><a href="comparativo-cursos.html">BSI é Comparativos</a></li>
             </ul>
         </nav>
-        <a href="index.html" class="logout-button-nav">Sair</a>
-        <button id="theme-toggle">Modo Escuro</button>
-    </header>
+
+        <button id="mobile-nav-toggle" aria-label="Abrir menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <div class="header-actions">
+            <a href="login.html" class="login-link-nav">Login</a>
+            <a href="perfil.html" class="profile-link-nav" style="display: none;">Meu Perfil</a>
+            <a href="#" id="logout-btn" class="logout-link-nav" style="display: none;">Sair</a>
+            <button id="theme-toggle">Modo Escuro</button>
+        </div>
+
+    </div> </header>
 
     <main>
         <div class="profile-container">
@@ -42,7 +59,7 @@
                     <div class="profile-details">
                         <h1>Fernando (Exemplo)</h1>
                         <p class="user-email">fernando@exemplo.com</p>
-                        <p class="member-since">Membro desde: Outubro de 2025</p>
+                        <p class="member-since" id="member-since">Membro desde: Carregando...</p>
                     </div>
                 </div>
 
@@ -65,7 +82,7 @@
                 <div class="danger-zone">
                     <h4>Zona de Perigo</h4>
                     <p>A ação abaixo é permanente e não poderá ser desfeita.</p>
-                    <button class="button-danger">Deletar Minha Conta</button>
+                    <button class="button-danger" id="delete-account-btn">Deletar Minha Conta</button>
                 </div>
 
             </div>
