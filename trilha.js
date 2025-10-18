@@ -1,4 +1,7 @@
-// trilha.js
+// --- NOVO: CÓDIGO DO VERCELL ANALYTICS ---
+import { inject } from '@vercel/analytics';
+inject();
+// ----------------------------------------
 
 document.addEventListener('DOMContentLoaded', () => {
     const nextStepBtn = document.getElementById('next-step-btn');

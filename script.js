@@ -2,6 +2,11 @@
 
 // script.js (Versão Completa e Otimizada)
 
+// --- NOVO: CÓDIGO DO VERCELL ANALYTICS ---
+import { inject } from '@vercel/analytics';
+inject();
+// ----------------------------------------
+
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- LÓGICA DO SELETOR DE TEMA (RODA EM TODAS AS PÁGINAS) ---
@@ -59,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     checkLoginState(); // Verifica o estado de login assim que a página carrega
-    
+
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
