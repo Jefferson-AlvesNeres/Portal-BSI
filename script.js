@@ -1,5 +1,3 @@
-import { Analytics } from "@vercel/analytics/next"
-
 //(Versão Completa e Otimizada)
 
 document.addEventListener('DOMContentLoaded', () => {
