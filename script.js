@@ -1,6 +1,9 @@
+// --- NOVO: CÓDIGO DO VERCELL ANALYTICS ---
+import { inject } from '/node_modules/@vercel/analytics/dist/index.mjs';
+inject();
+// ----------------------------------------
 
-
-// script.js (Versão Completa e Otimizada)
+//(Versão Completa e Otimizada)
 
 document.addEventListener('DOMContentLoaded', () => {
 
