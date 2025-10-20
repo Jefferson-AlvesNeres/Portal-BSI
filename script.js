@@ -1,7 +1,4 @@
-// --- NOVO: CÓDIGO DO VERCELL ANALYTICS ---
-import { inject } from '/node_modules/@vercel/analytics/dist/index.mjs';
-inject();
-// ----------------------------------------
+import { Analytics } from "@vercel/analytics/next"
 
 //(Versão Completa e Otimizada)
 
