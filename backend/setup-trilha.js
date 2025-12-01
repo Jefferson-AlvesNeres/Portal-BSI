@@ -1,84 +1,39 @@
-// backend/setup-trilha.js (Versão Correta e Completa)
+// setup-trilha.js
+// Script para popular a tabela 'topicos_trilha'. Execute uma vez: node setup-trilha.js
 
-const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('./database.db');
+const db = require('./database.js');
 
-// A lista completa com os 25 tópicos da graduação
-const topics = [
-    { id: 1, name: 'Introdução à Computação' },
-    { id: 2, name: 'Lógica de Programação e Algoritmos' },
-    { id: 3, name: 'Matemática Discreta' },
-    { id: 4, name: 'Programação Estruturada (com C)' },
-    { id: 5, name: 'Fundamentos de Sistemas de Informação' },
-    { id: 6, name: 'Cálculo I' },
-    { id: 7, name: 'Programação Orientada a Objetos (com Java)' },
-    { id: 8, name: 'Estrutura de Dados I' },
-    { id: 9, name: 'Modelagem de Banco de Dados' },
-    { id: 10, name: 'Banco de Dados (SQL)' },
-    { id: 11, name: 'Engenharia de Software I' },
-    { id: 12, name: 'Sistemas Operacionais' },
-    { id: 13, name: 'Redes de Computadores I' },
-    { id: 14, name: 'Desenvolvimento Web: Frontend (HTML, CSS, JS)' },
-    { id: 15, name: 'Análise e Projeto de Sistemas' },
-    { id: 16, name: 'Gestão de Projetos de TI (PMBOK)' },
-    { id: 17, name: 'Desenvolvimento Web: Backend (Node.js/Express)' },
-    { id: 18, name: 'Fundamentos de Segurança da Informação' },
-    { id: 19, name: 'Interação Humano-Computador (IHC/UX)' },
-    { id: 20, name: 'Inteligência Artificial e Machine Learning' },
-    { id: 21, name: 'Computação em Nuvem (Cloud Computing)' },
-    { id: 22, name: 'Projeto de TCC I' },
-    { id: 23, name: 'DevOps e Implantação Contínua' },
-    { id: 24, name: 'Soft Skills e Preparação para Entrevistas' },
-    { id: 25, name: 'Projeto de TCC II e Apresentação' }
-];
+const constellationData = {
+    1: { topics: [ { id: 1, name: 'Intro. à Computação' }, { id: 2, name: 'Lógica e Algoritmos' }, { id: 3, name: 'Mat. Discreta' }, { id: 100, name: 'Metodologia Científica' } ] },
+    2: { topics: [ { id: 4, name: 'Prog. Estruturada' }, { id: 5, name: 'Fundamentos de SI' }, { id: 6, name: 'Cálculo I' }, { id: 101, name: 'Comunicação e Expressão' } ] },
+    3: { topics: [ { id: 7, name: 'Prog. Orientada a Objetos' }, { id: 8, name: 'Estrutura de Dados I' }, { id: 9, name: 'Teoria dos Grafos' }, { id: 10, name: 'Sistemas Operacionais I' }, { id: 102, name: 'Contabilidade' } ] },
+    4: { topics: [ { id: 11, name: 'Estrutura de Dados II' }, { id: 12, name: 'Banco de Dados I' }, { id: 13, name: 'Engenharia de Software I' }, { id: 14, name: 'Estatística e Probabilidade' }, { id: 103, name: 'Teoria da Computação' } ] },
+    5: { topics: [ { id: 15, name: 'Banco de Dados II' }, { id: 16, name: 'Redes de Computadores I' }, { id: 17, name: 'Engenharia de Software II' }, { id: 18, name: 'Programação Web I (Front)' }, { id: 104, name: 'Economia' } ] },
+    6: { topics: [ { id: 19, name: 'Redes de Computadores II' }, { id: 20, name: 'Segurança da Informação' }, { id: 21, name: 'Inteligência Artificial' }, { id: 22, name: 'Programação Web II (Back)' }, { id: 105, name: 'Administração' } ] },
+    7: { topics: [ { id: 23, name: 'Gestão de Projetos de TI' }, { id: 24, name: 'Empreendedorismo em TI' }, { id: 25, name: 'Programação Mobile' }, { id: 26, name: 'TCC I' }, { id: 106, name: 'Tópicos Avançados (Cloud)' } ] },
+    8: { topics: [ { id: 27, name: 'Estágio Supervisionado' }, { id: 28, name: 'TCC II' }, { id: 29, name: 'Ética e Direito em TI' }, { id: 30, name: 'Governança de TI' } ] }
+};
 
-// O código abaixo continua o mesmo, agora usando a lista completa.
-db.serialize(() => {
-    db.run(`
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            email TEXT NOT NULL UNIQUE,
-            password TEXT NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    `, (err) => {
-        if (err) return console.error("Erro ao criar tabela 'users':", err.message);
-        console.log("Tabela 'users' verificada/criada.");
-
-        db.run(`
-            CREATE TABLE IF NOT EXISTS topics (
-                id INTEGER PRIMARY KEY,
-                name TEXT NOT NULL
-            )
-        `, (err) => {
-            if (err) return console.error("Erro ao criar tabela 'topics':", err.message);
-            console.log("Tabela 'topics' verificada/criada.");
-
-            const stmt = db.prepare("INSERT OR IGNORE INTO topics (id, name) VALUES (?, ?)");
-            topics.forEach(topic => stmt.run(topic.id, topic.name));
-            stmt.finalize((err) => {
-                if (err) return console.error("Erro ao inserir tópicos:", err.message);
-                console.log("Todos os 25 tópicos da trilha inseridos.");
-
-                db.run(`
-                    CREATE TABLE IF NOT EXISTS user_progress (
-                        user_id INTEGER NOT NULL,
-                        topic_id INTEGER NOT NULL,
-                        PRIMARY KEY (user_id, topic_id),
-                        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-                        FOREIGN KEY (topic_id) REFERENCES topics(id) ON DELETE CASCADE
-                    )
-                `, (err) => {
-                    if (err) return console.error("Erro ao criar tabela 'user_progress':", err.message);
-                    console.log("Tabela 'user_progress' verificada/criada.");
-
-                    db.close((err) => {
-                        if (err) return console.error("Erro ao fechar o banco de dados:", err.message);
-                        console.log('Script finalizado com sucesso. Conexão fechada.');
-                    });
+function popularTabelaTopicos() {
+    console.log("Populando 'topicos_trilha'...");
+    const sqlInsert = `INSERT OR IGNORE INTO topicos_trilha (id, name, semester) VALUES (?, ?, ?)`; // Usa IGNORE para não dar erro se já existir
+    db.serialize(() => {
+        const stmt = db.prepare(sqlInsert);
+        let count = 0;
+        for (const semesterId in constellationData) {
+            const semester = constellationData[semesterId];
+            semester.topics.forEach(topic => {
+                stmt.run(topic.id, topic.name, parseInt(semesterId), function(err) {
+                     if (err) { console.error(`Erro inserir ${topic.id}:`, err.message); }
+                     else if (this.changes > 0) { count++; } // Conta só os inseridos
                 });
             });
+        }
+        stmt.finalize((err) => {
+            if (err) { console.error("Erro finalizar:", err.message); }
+            else { console.log(`Concluído. ${count} novos tópicos adicionados.`); }
+            db.close((err) => { if (err) console.error("Erro fechar DB:", err.message); else console.log("DB fechado."); });
         });
     });
-});
+}
+popularTabelaTopicos();

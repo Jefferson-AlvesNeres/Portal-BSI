@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-theme="admin-dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - Guia BSI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="header-inner">
+            <div class="logo-title">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zM5 11V6.3l7-3.11v13.5C8.84 15.5 5 13.06 5 11zm7 10.94V12h7c-.53 4.12-3.28 7.79-7 8.94z"></path></svg>
+                <h1>Painel de Administração</h1>
+            </div>
+            <div class="header-actions">
+                <span id="admin-welcome">Olá, admin!</span>
+                <a href="index.html" class="admin-nav-link">Voltar ao Site</a>
+                <a href="#" id="admin-logout-btn" class="admin-nav-link">Sair</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <section class="admin-widget" id="stats-widget">
+            <h2>Visão Geral do Site</h2>
+            <div class="stats-grid">
+                <div class="stat-card"><span class="stat-value" id="stat-total-users">--</span><span class="stat-label">Usuários</span></div>
+                <div class="stat-card"><span class="stat-value" id="stat-total-topics">--</span><span class="stat-label">Tópicos</span></div>
+                <div class="stat-card"><span class="stat-value" id="stat-total-completions">--</span><span class="stat-label">Conclusões</span></div>
+            </div>
+        </section>
+
+        <section class="admin-widget" id="user-management-widget">
+            <h2>Gerenciamento de Usuários</h2>
+            <input type="text" id="user-search-input" placeholder="Buscar por nome, email ou username...">
+            <div class="table-container">
+                <table id="user-table">
+                    <thead>
+                        <tr><th>ID</th><th>Nome</th><th>Email</th><th>Username</th><th>Progresso</th><th>Função</th><th>Ações</th></tr>
+                    </thead>
+                    <tbody id="user-table-body">
+                        <tr><td colspan="7" class="loading-users">Carregando usuários...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <div id="admin-confirm-modal" class="modal-overlay">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h2 id="confirm-modal-title">Confirmar Ação</h2>
+                <span class="close-modal" id="close-confirm-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-modal-text">Você tem certeza?</p>
+                <div class="profile-actions" style="justify-content: flex-end;">
+                    <button class="button-secondary" id="confirm-modal-cancel">Cancelar</button>
+                    <button class="button-danger" id="confirm-modal-confirm">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js" defer></script>
+    <script src="admin.js" defer></script>
+</body>
+</html>

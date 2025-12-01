@@ -1,0 +1,354 @@
+/* guia.css */
+/* Tema exclusivo para as páginas de Guia (Programação, Tópicos, etc.) */
+
+/* --- Variáveis do Tema --- */
+
+/* Tema Escuro (Default) - "Deep Space" */
+:root, html[data-theme="dark"].guia-page body, html[data-theme="dark"].topico-page body {
+    --guia-bg: #0B0F19; /* Azul muito escuro (espaço profundo) */
+    --guia-text: #D0D8E8; /* Texto (cinza-azulado claro) */
+    --guia-text-muted: #8A98B0; /* Texto secundário/muted */
+    --guia-primary: #809FFF; /* Azul claro (Nebulosa/Links) */
+    --guia-secondary: #3FB950; /* Verde (Acentos/Ícones) */
+    --guia-panel-bg: rgba(23, 30, 46, 0.7); /* Fundo painel translúcido */
+    --guia-panel-border: rgba(128, 159, 255, 0.2); /* Borda painel azulada */
+    --guia-shadow: rgba(128, 159, 255, 0.2); /* Sombra azulada sutil */
+    --guia-panel-hover: rgba(128, 159, 255, 0.3); /* Cor borda hover */
+    --guia-code-bg: #1A1F2B; /* Fundo para blocos de código */
+}
+
+/* Tema Claro - "Blue Sky" */
+html[data-theme="light"].guia-page body, html[data-theme="light"].topico-page body {
+    --guia-bg: #F0F8FF; /* Azul céu (AliceBlue) */
+    --guia-text: #1E293B; /* Texto (Cinza-azulado escuro) */
+    --guia-text-muted: #475569; /* Texto secundário/muted */
+    --guia-primary: #005A9C; /* Azul Royal (Principal/Links) */
+    --guia-secondary: #F97316; /* Laranja (Acentos/Ícones) */
+    --guia-panel-bg: rgba(255, 255, 255, 0.7); /* Fundo painel translúcido */
+    --guia-panel-border: rgba(0, 90, 156, 0.2); /* Borda painel azulada */
+    --guia-shadow: rgba(0, 90, 156, 0.15); /* Sombra azulada sutil */
+    --guia-panel-hover: rgba(0, 90, 156, 0.3); /* Cor borda hover */
+    --guia-code-bg: #E0F2FE; /* Fundo azul claro para código */
+}
+
+/* --- Estrutura Básica --- */
+body.guia-page, body.topico-page {
+    background-color: var(--guia-bg);
+    color: var(--guia-text);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    line-height: 1.7;
+    transition: background-color 0.3s, color 0.3s;
+    display: flex; /* Para layout de coluna com header/nav/main */
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* --- Cabeçalho Comum dos Guias --- */
+.guia-header {
+    padding: 2rem 1.5rem 1.5rem 1.5rem; /* Ajuste padding */
+    text-align: center;
+    border-bottom: 1px solid var(--guia-panel-border);
+    position: relative;
+    /* Efeito gradiente sutil no fundo */
+    background: linear-gradient(180deg, rgba(var(--guia-panel-bg), 0.5) 0%, transparent 100%);
+    flex-shrink: 0; /* Impede que encolha */
+}
+.guia-header h1 {
+    color: var(--guia-primary);
+    font-size: clamp(2rem, 5vw, 2.8rem); /* Ajustado clamp */
+    margin: 0.5rem 0 0.5rem 0;
+    text-shadow: 0 2px 10px var(--guia-shadow);
+}
+.guia-header p {
+    font-size: 1.1rem;
+    color: var(--guia-text-muted);
+    max-width: 650px; /* Aumentado max-width */
+    margin: 0 auto;
+}
+.guia-back-link {
+    display: inline-block; /* Permite margem */
+    margin-bottom: 1rem; /* Espaço abaixo */
+    color: var(--guia-secondary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s, opacity 0.3s;
+    opacity: 0.8;
+}
+.guia-back-link:hover {
+    text-decoration: underline;
+    opacity: 1;
+}
+
+/* Botão de Tema do Guia */
+.guia-theme-toggle {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: var(--guia-panel-bg);
+    border: 1px solid var(--guia-panel-border);
+    color: var(--guia-primary);
+    font-size: 1.4rem; /* Ajustado */
+    width: 40px; /* Ajustado */
+    height: 40px; /* Ajustado */
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s;
+    backdrop-filter: blur(5px);
+}
+.guia-theme-toggle:hover {
+    transform: scale(1.1) rotate(15deg);
+    box-shadow: 0 0 15px var(--guia-shadow);
+    border-color: var(--guia-panel-hover);
+}
+
+/* --- Navegação Compartilhada dos Guias --- */
+.guia-nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; /* Permite quebra de linha */
+    gap: 0.8rem; /* Ajustado gap */
+    padding: 0.8rem 1rem;
+    background-color: rgba(var(--guia-bg-rgb, 11, 15, 25), 0.8); /* Usa RGB para transparência */
+    border-bottom: 1px solid var(--guia-panel-border);
+    position: sticky;
+    top: 0; /* Fixa abaixo do header */
+    z-index: 900;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+/* Define variáveis RGB para os temas */
+html[data-theme="dark"].guia-page body, html[data-theme="dark"].topico-page body { --guia-bg-rgb: 11, 15, 25; }
+html[data-theme="light"].guia-page body, html[data-theme="light"].topico-page body { --guia-bg-rgb: 240, 248, 255; }
+
+.guia-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem; /* Ajustado padding */
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--guia-text-muted);
+    font-weight: 600;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+    background-color: transparent;
+}
+.guia-nav-link svg {
+    width: 18px; /* Reduzido */
+    height: 18px; /* Reduzido */
+    fill: currentColor;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+.guia-nav-link:hover {
+    color: var(--guia-primary);
+    background-color: var(--guia-panel-bg);
+}
+.guia-nav-link:hover svg {
+    opacity: 1;
+}
+.guia-nav-link.active {
+    color: var(--guia-secondary);
+    border-color: var(--guia-secondary);
+    background-color: var(--guia-panel-bg);
+    box-shadow: 0 0 10px rgba(var(--guia-secondary-rgb, 63, 185, 80), 0.5); /* Usa RGB para sombra colorida */
+}
+.guia-nav-link.active svg {
+    opacity: 1;
+}
+/* Define variáveis RGB secundárias */
+html[data-theme="dark"].guia-page body, html[data-theme="dark"].topico-page body { --guia-secondary-rgb: 63, 185, 80; }
+html[data-theme="light"].guia-page body, html[data-theme="light"].topico-page body { --guia-secondary-rgb: 249, 115, 22; }
+
+/* --- Conteúdo Principal e Cards --- */
+.guia-main {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    flex-grow: 1; /* Ocupa espaço restante */
+}
+
+/* Adapta .glass-panel para os guias */
+.guia-card {
+    /* Usa variáveis --guia-* para cores */
+    background: var(--guia-panel-bg);
+    border: 1px solid var(--guia-panel-border);
+    box-shadow: 0 4px 12px var(--guia-shadow);
+    border-radius: 12px; /* Reduzido */
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    transition: border-color 0.3s, transform 0.3s;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    overflow: hidden; /* Garante cantos arredondados */
+}
+/* Remove aura padrão */
+.guia-card::before { display: none; }
+
+.guia-card:hover {
+    border-color: var(--guia-panel-hover);
+    transform: translateY(-3px); /* Efeito sutil de levantar */
+}
+.guia-card p {
+    margin-bottom: 1rem;
+    color: var(--guia-text); /* Garante cor do texto */
+}
+.guia-card p:last-child {
+    margin-bottom: 0;
+}
+
+.guia-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.2rem; /* Aumentado */
+    border-bottom: 1px solid var(--guia-panel-border);
+    padding-bottom: 1.2rem; /* Aumentado */
+}
+.guia-card-icon {
+    flex-shrink: 0;
+}
+.guia-card-icon svg {
+    width: 36px; /* Ajustado */
+    height: 36px; /* Ajustado */
+    display: block;
+    fill: currentColor; /* Usa cor definida no elemento pai */
+}
+.guia-card h2 {
+    margin: 0;
+    font-size: 1.6rem; /* Ajustado */
+    color: var(--guia-text); /* Cor padrão */
+    font-weight: 600;
+}
+
+.guia-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+.guia-list li {
+    position: relative;
+    padding-left: 1.75rem;
+    margin-bottom: 0.8rem; /* Ajustado */
+    color: var(--guia-text); /* Garante cor */
+}
+.guia-list li::before {
+    content: '✓'; /* Padrão */
+    position: absolute;
+    left: 0;
+    top: 1px; /* Ajuste fino vertical */
+    color: var(--guia-secondary);
+    font-weight: 700;
+    font-size: 1.1em;
+}
+.guia-list.links li::before { content: '→'; } /* Para listas de links */
+.guia-list.links a { color: var(--guia-primary); text-decoration: none; transition: color 0.3s; }
+.guia-list.links a:hover { text-decoration: underline; color: var(--guia-secondary); }
+
+
+.guia-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem; /* Ajustado */
+    margin-top: 1.5rem;
+}
+.guia-tags span {
+    background-color: rgba(var(--guia-primary-rgb, 128, 159, 255), 0.1); /* Usa RGB para fundo */
+    border: 1px solid var(--guia-panel-border);
+    padding: 0.3rem 0.8rem; /* Ajustado */
+    border-radius: 15px;
+    font-size: 0.85rem; /* Reduzido */
+    color: var(--guia-text-muted);
+    font-weight: 500;
+}
+/* Define variáveis RGB primárias */
+html[data-theme="dark"].guia-page body, html[data-theme="dark"].topico-page body { --guia-primary-rgb: 128, 159, 255; }
+html[data-theme="light"].guia-page body, html[data-theme="light"].topico-page body { --guia-primary-rgb: 0, 90, 156; }
+
+
+/* --- Layout da Página de Tópico Específico --- */
+.topico-page .guia-main {
+    max-width: 1200px;
+    display: grid;
+    grid-template-columns: 1fr; /* Default: uma coluna */
+    gap: 2rem;
+}
+/* Em telas maiores, divide em duas colunas */
+@media (min-width: 900px) {
+    .topico-page .guia-main {
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); /* Coluna esquerda maior, evita overflow */
+    }
+}
+
+.topico-coluna-esquerda,
+.topico-coluna-direita {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Seções de Tópico */
+.topico-page h2 {
+    color: var(--guia-primary);
+    font-size: 1.4rem; /* Ajustado */
+    margin-bottom: 1rem;
+    padding-bottom: 0.6rem; /* Ajustado */
+    border-bottom: 1px solid var(--guia-panel-border);
+    font-weight: 600;
+}
+.topico-page .guia-card {
+    margin-bottom: 0; /* Remove margem entre cards nas colunas */
+}
+.topico-page .guia-card p,
+.topico-page .guia-card li {
+    color: var(--guia-text); /* Garante cor do texto principal */
+    font-size: 1rem; /* Tamanho padrão */
+}
+
+/* Exemplo Prático */
+.topico-page .problema { /* Classe para o parágrafo do problema */
+    font-weight: 600;
+    color: var(--guia-secondary);
+    font-size: 1.05rem; /* Leve destaque */
+    margin-bottom: 0.5rem;
+}
+pre {
+    background-color: var(--guia-code-bg); /* Fundo específico para código */
+    border: 1px solid var(--guia-panel-border);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto; /* Rolagem horizontal para código longo */
+    font-family: 'Courier New', Courier, monospace; /* Fonte monoespaçada */
+    font-size: 0.9rem; /* Tamanho código */
+    color: var(--guia-text); /* Cor do texto do código */
+    margin-top: 1rem; /* Espaço acima */
+}
+code { font-family: inherit; } /* Herda fonte do <pre> */
+
+/* Ícone do Tópico na coluna direita */
+#topico-svg-container {
+    max-width: 120px; /* Reduzido */
+    margin: 1rem auto;
+    color: var(--guia-primary); /* Cor primária do tema do guia */
+}
+#topico-svg-container svg {
+    width: 100%;
+    height: auto;
+    fill: currentColor; /* Usa a cor definida no container */
+}
+
+/* Responsividade Adicional para Guias */
+@media (max-width: 600px) {
+    .guia-header h1 { font-size: 1.8rem; }
+    .guia-header p { font-size: 1rem; }
+    .guia-nav { justify-content: flex-start; overflow-x: auto; padding: 0.5rem; } /* Permite rolar links */
+    .guia-nav-link { padding: 0.5rem 0.8rem; font-size: 0.9rem; }
+    .guia-card h2 { font-size: 1.4rem; }
+    .topico-page h2 { font-size: 1.3rem; }
+    .guia-tags span { font-size: 0.8rem; padding: 0.2rem 0.6rem; }
+    pre { font-size: 0.85rem; }
+}

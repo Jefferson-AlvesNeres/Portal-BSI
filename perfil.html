@@ -14,106 +14,113 @@
     </div>
 
     <header>
-    <div class="header-inner">
-        
-        <a href="index.html" class="logo-link">
-            <img src="logo.svg" alt="Logo Guia BSI" class="logo-img">
-        </a>
-
-        <nav>
-            <ul>
-                <li><a href="index.html">Início</a></li>
-                <li><a href="sobre-bsi.html">O que é BSI?</a></li>
-                <li><a href="mercado-trabalho.html">Mercado de Trabalho</a></li>
-                <li><a href="comparativo-cursos.html">BSI é Comparativos</a></li>
-                <li><a href="trilha.html">Guia de Carreira</a></li>
-            </ul>
-        </nav>
-
-        <button id="mobile-nav-toggle" aria-label="Abrir menu">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-        </button>
-
-        <div class="header-actions">
-            <a href="login.html" class="login-link-nav">Login</a>
-            <a href="perfil.html" class="profile-link-nav" style="display: none;">Meu Perfil</a>
-            <a href="#" id="logout-btn" class="logout-link-nav" style="display: none;">Sair</a>
-            <button id="theme-toggle">Modo Escuro</button>
+        <div class="header-inner">
+            <a href="index.html" class="logo-link">
+                <img src="logo.svg" alt="Logo Guia BSI" class="logo-img">
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="sobre-bsi.html">O que é BSI?</a></li>
+                    <li><a href="mercado-trabalho.html">Mercado de Trabalho</a></li>
+                    <li><a href="comparativo-cursos.html">BSI é Comparativos</a></li>
+                    <li><a href="trilha.html">Guia de Carreira</a></li>
+                    <li><a href="admin.html" id="admin-link-nav" style="display: none; color: var(--danger-color-light);">Admin</a></li>
+                </ul>
+            </nav>
+            <button id="mobile-nav-toggle" aria-label="Abrir menu">
+                <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+            </button>
+            <div class="header-actions">
+                <a href="login.html" class="login-link-nav">Login</a>
+                <a href="perfil.html" id="header-avatar-link" class="profile-link-nav" style="display: none;">
+                    <div id="header-avatar-display" class="header-avatar"></div>
+                </a>
+                <a href="#" id="logout-btn" class="logout-link-nav" style="display: none;">Sair</a>
+                <button id="theme-toggle">Modo Escuro</button>
+            </div>
         </div>
-
-    </div> </header>
+    </header>
 
     <main>
         <div class="profile-container">
             <div class="profile-card glass-panel">
-                
+                <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+
                 <div class="profile-header">
                     <div class="profile-avatar">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        <div class="avatar-overlay">
-                            <label for="avatar-upload">Alterar Foto</label>
-                            <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
-                        </div>
+                        <div id="profile-avatar-placeholder"></div>
+                        <div class="avatar-interactive-overlay"></div>
                     </div>
                     <div class="profile-details">
-                        <h1>Fernando (Exemplo)</h1>
-                        <p class="user-email">fernando@exemplo.com</p>
-                        <p class="member-since" id="member-since">Membro desde: Carregando...</p>
+                        <h1 id="profile-name">Carregando...</h1>
+                        <p class="user-email" id="profile-email">Carregando...</p>
+                        <p class="member-since" id="member-since">...</p>
                     </div>
                 </div>
 
                 <div class="profile-stats">
                     <div class="stat-card">
-                        <span class="stat-number">75%</span>
+                        <span class="stat-number">-%</span>
                         <span class="stat-label">Progresso do Guia</span>
                     </div>
-                    <div class="stat-card">
-                        <span class="stat-number">12</span>
-                        <span class="stat-label">Artigos Salvos</span>
+                </div>
+
+                <div class="profile-section">
+                    <h4>Gerenciar Conta</h4>
+                    <div class="profile-actions">
+                         <button class="button-primary" id="open-edit-modal-btn">Editar Informações</button>
+                        <button class="button-secondary" id="open-change-password-modal-btn">Alterar Senha</button>
                     </div>
                 </div>
 
-                <div class="profile-actions">
-                    <button class="button-primary" id="open-edit-modal-btn">Editar Perfil</button>
-                    <button class="button-secondary" id="open-change-password-modal-btn">Alterar Senha</button>
-                </div>
-
-                <div class="danger-zone">
+                <div class="profile-section danger-zone">
                     <h4>Zona de Perigo</h4>
-                    <p>A ação abaixo é permanente e não poderá ser desfeita.</p>
                     <button class="button-danger" id="delete-account-btn">Deletar Minha Conta</button>
                 </div>
 
             </div>
         </div>
-        <div id="edit-profile-modal" class="modal-overlay">
+
+        <div id="avatar-choice-modal" class="modal-overlay">
             <div class="modal-content glass-panel">
+                <div class="modal-header">
+                    <h2>Escolha seu Avatar</h2>
+                    <span class="close-modal" id="close-avatar-modal-btn">&times;</span>
+                </div>
+                <div class="modal-body avatar-options-container">
+                    <p>Carregando opções...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="edit-profile-modal" class="modal-overlay">
+             <div class="modal-content glass-panel">
                 <div class="modal-header">
                     <h2>Editar Informações</h2>
                     <span class="close-modal" id="close-modal-btn">&times;</span>
                 </div>
-                <form id="edit-profile-form">
+                <form id="edit-profile-form" class="modal-body">
                     <div class="input-group">
                         <label for="edit-name">Nome Completo</label>
-                        <input type="text" id="edit-name" value="Fernando (Exemplo)">
+                        <input type="text" id="edit-name" value="">
                     </div>
                     <div class="input-group">
                         <label for="edit-email">Email</label>
-                        <input type="email" id="edit-email" value="fernando@exemplo.com">
+                        <input type="email" id="edit-email" value="">
                     </div>
                     <button type="submit" class="button-primary">Salvar Alterações</button>
                 </form>
             </div>
         </div>
+
         <div id="change-password-modal" class="modal-overlay">
             <div class="modal-content glass-panel">
                 <div class="modal-header">
                     <h2>Alterar Senha</h2>
                     <span class="close-modal" id="close-password-modal-btn">&times;</span>
                 </div>
-                <form id="change-password-form">
+                <form id="change-password-form" class="modal-body">
                     <div class="input-group">
                         <label for="current-password">Senha Atual</label>
                         <input type="password" id="current-password" placeholder="Digite sua senha atual" required>
@@ -130,8 +137,10 @@
                 </form>
             </div>
         </div>
+
     </main>
 
     <script src="script.js" defer></script>
+    <script src="profile.js" defer></script>
 </body>
 </html>

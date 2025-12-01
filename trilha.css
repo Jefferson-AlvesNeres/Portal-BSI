@@ -1,156 +1,310 @@
-/* trilha.css */
+/*Estilos para a Jornada das Constelações */
 
-/* ... (Estilos da barra de progresso continuam os mesmos) ... */
+/* --- VARIÁVEIS DE TEMA (NOVO) --- */
+:root {
+    /* Tema Escuro (Default) - "Noite Estrelada" */
+    --theme-bg: #000411;
+    --theme-text: #E2E8F0;
+    --theme-text-muted: #A0AEC0;
+    --theme-primary: #38BDF8; /* Azul Cyano Brilhante */
+    --theme-secondary: #A0AEC0; /* Cinza claro (estrelas distantes) */
+    --theme-panel-bg: rgba(17, 24, 39, 0.6); /* Painel glass-dark */
+    --theme-panel-border: rgba(56, 189, 248, 0.3);
+    --theme-shadow: rgba(56, 189, 248, 0.4);
+    --theme-success: #ffd700; /* Dourado para 'completos' */
+    --theme-success-shadow: #ffd700;
+}
 
-.jornadas-container {
+[data-theme="light"] {
+    /* Tema Claro - "Névoa da Manhã" */
+    --theme-bg: #F0F9FF; /* Azul muito claro (céu da manhã) */
+    --theme-text: #1E293B; /* Azul escuro (texto) */
+    --theme-text-muted: #475569;
+    --theme-primary: #F97316; /* Laranja (Sol) */
+    --theme-secondary: #0EA5E9; /* Azul (links/estrelas) */
+    --theme-panel-bg: rgba(255, 255, 255, 0.6); /* Painel glass-light */
+    --theme-panel-border: rgba(249, 115, 22, 0.3);
+    --theme-shadow: rgba(249, 115, 22, 0.4);
+    --theme-success: #16A34A; /* Verde para 'completos' */
+    --theme-success-shadow: #16a34a80;
+}
+
+/* * ==========================================================
+ * --- NOVA ANIMAÇÃO DE FUNDO (NEBULOSA) ---
+ * Esta seção cria a nova animação de fundo, 
+ * independente da 'index.html'.
+ * ==========================================================
+*/
+#background-animation {
+    position: fixed; /* Fica fixo na tela */
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
+    z-index: -10; /* Garante que fique atrás de todo o conteúdo */
+    overflow: hidden; /* Impede que os elementos da animação vazem */
+    
+    /* Usa o background do tema como cor base */
+    background-color: var(--theme-bg); 
 }
 
-.jornada-card {
-    padding: 2rem;
-    margin-bottom: 2rem;
-}
-
-.jornada-card h3 {
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
-}
-
-.jornada-card p {
-    margin-bottom: 2rem;
-    color: var(--secondary-color-light);
-}
-
-html.dark-mode .jornada-card p {
-    color: var(--secondary-color-dark);
-}
-
-.mission-list {
-    list-style: none;
-    padding: 0;
-}
-
-.mission-item {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    background-color: rgba(0,0,0,0.03);
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-html.dark-mode .mission-item {
-    background-color: rgba(255,255,255,0.05);
-}
-
-.mission-item:hover {
-    background-color: rgba(0,0,0,0.07);
-}
-html.dark-mode .mission-item:hover {
-    background-color: rgba(255,255,255,0.1);
-}
-
-.mission-item input[type="checkbox"] {
-    /* Esconde o checkbox original */
+/* Esconde as estrelas antigas (stars1, stars2, stars3) 
+  que vêm da 'index' (style.css) para não termos duas animações.
+*/
+#background-animation #stars1,
+#background-animation #stars2,
+#background-animation #stars3 {
     display: none;
 }
 
-.mission-item label {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    width: 100%;
-    font-size: 1.1rem;
-    font-weight: 500;
-}
-
-/* Cria o nosso checkbox personalizado */
-.mission-item label::before {
+/* Usamos pseudo-elementos (::before e ::after) para criar duas "nuvens" de nebulosa.
+  Isso evita adicionar mais HTML.
+*/
+#background-animation::before,
+#background-animation::after {
     content: '';
-    width: 24px;
-    height: 24px;
-    border: 2px solid var(--primary-color-light);
-    border-radius: 50%; /* Círculo */
-    margin-right: 15px;
+    position: absolute;
+    /* Usa 'vmax' para garantir que cubra a tela inteira, 
+       seja na largura ou altura (viewport max) */
+    width: 100vmax;
+    height: 100vmax;
+    border-radius: 50%; /* Faz ser um círculo gigante */
+    
+    /* O 'radial-gradient' cria o efeito de "nuvem" suave.
+      Ele usa a cor primária do tema (azul no escuro, laranja no claro).
+    */
+    background: radial-gradient(circle, var(--theme-primary), transparent 60%);
+    opacity: 0.15; /* Muito sutil para não atrapalhar a leitura */
+    
+    /* Aplica a animação 'moveNebula' */
+    animation: moveNebula 80s linear infinite alternate;
+}
+
+/* Posição inicial da primeira nuvem (canto superior esquerdo) */
+#background-animation::before {
+    top: -50%;
+    left: -50%;
+}
+
+/* Posição inicial e animação diferente para a segunda nuvem (canto inferior direito).
+  Tempos diferentes (80s vs 70s) e direções (alternate vs alternate-reverse)
+  fazem o movimento parecer mais orgânico e menos repetitivo.
+*/
+#background-animation::after {
+    bottom: -50%;
+    right: -50%;
+    animation: moveNebula 70s linear infinite alternate-reverse; 
+}
+
+/* A animação @keyframes 'moveNebula' define o movimento.
+  Ela move lentamente (translate) e gira (rotate) as nuvens.
+*/
+@keyframes moveNebula {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+    100% {
+        /* Move 100px horizontalmente e 150px verticalmente, e gira 180 graus */
+        transform: translate(100px, 150px) rotate(180deg);
+    }
+}
+/* --- FIM DA NOVA ANIMAÇÃO DE FUNDO --- */
+
+
+/* --- ESTRUTURA GERAL --- */
+body.trilha-page {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    /* A cor de fundo agora é controlada pela #background-animation, 
+      mas mantemos a cor do texto aqui.
+    */
+    color: var(--theme-text);
+    transition: color 0.3s;
+}
+
+.trilha-main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+/* --- CABEÇALHO E TEMA --- */
+.trilha-header {
+    padding: 1rem 2rem 1.5rem 2rem;
+    text-align: center;
+    color: var(--theme-text);
     flex-shrink: 0;
-    transition: all 0.2s ease;
 }
 
-html.dark-mode .mission-item label::before {
-    border-color: var(--primary-color-dark);
+.trilha-header .header-content {
+    max-width: 800px;
+    margin: 0 auto 1.5rem auto;
+    position: relative; /* Para o botão de tema */
 }
 
-/* Estilo quando está marcado */
-.mission-item input[type="checkbox"]:checked + label::before {
-    background-color: var(--accent-color-light);
-    border-color: var(--accent-color-light);
-}
-html.dark-mode .mission-item input[type="checkbox"]:checked + label::before {
-    background-color: var(--accent-color-dark);
-    border-color: var(--accent-color-dark);
+.trilha-header h1 {
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    text-shadow: 0 0 10px var(--theme-shadow);
 }
 
-/* Tacha o texto quando está marcado */
-.mission-item input[type="checkbox"]:checked + label {
-    text-decoration: line-through;
+.trilha-header p {
+    font-size: 1.1rem;
+    opacity: 0.8;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    color: var(--theme-primary);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+.back-link:hover {
+    opacity: 1;
+}
+
+/* Botão de Tema */
+/* ESTE BOTÃO É AGORA ESTILIZADO PELO 'guia.css' */
+/* As regras do .theme-toggle-button foram movidas para .guia-theme-toggle em guia.css */
+
+
+/* Barra de progresso */
+.progress-section-unique {
+    max-width: 600px;
+    margin: 0 auto;
+    background: var(--theme-panel-bg);
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--theme-panel-border);
+}
+
+/* --- MAPA ESTELAR (SKY CONTAINER) --- */
+.sky-container {
+    flex-grow: 1;
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+    /* Usa o estilo .glass-panel de style.css, mas o tema controla as cores */
+    background: var(--theme-panel-bg);
+    border: 1px solid var(--theme-panel-border);
+}
+
+#constellation-map {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.5s ease-out;
+}
+
+/* --- ESTRELAS E LINHAS --- */
+.star {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background-color: var(--theme-secondary);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    animation: pulse 2s infinite ease-in-out;
+}
+
+.star:hover {
+    transform: scale(2);
+    background-color: var(--theme-primary);
+    animation-play-state: paused;
+}
+
+.star.completed {
+    background-color: var(--theme-success);
+    box-shadow: 0 0 15px var(--theme-success-shadow);
+    animation: none;
+}
+
+.star-label {
+    position: absolute;
+    transform: translateX(15px);
+    color: var(--theme-secondary);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    pointer-events: none;
+    transition: color 0.3s;
+    /* Adiciona uma sombra da cor do fundo para 
+      garantir legibilidade em cima das linhas ou da nebulosa.
+    */
+    text-shadow: 0 0 5px var(--theme-bg), 0 0 5px var(--theme-bg);
+}
+
+.star:hover + .star-label {
+    color: var(--theme-primary);
+}
+
+.constellation-line {
+    position: absolute;
+    background-color: var(--theme-secondary);
+    opacity: 0.3;
+    height: 2px;
+    transform-origin: 0 0;
+    pointer-events: none;
+    transition: background-color 0.5s, opacity 0.5s;
+}
+.constellation-line.completed {
+    background-color: var(--theme-success);
     opacity: 0.7;
 }
 
-.trail-footer {
-    text-align: center;
-    margin-top: 2rem;
+@keyframes pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 5px var(--theme-secondary); }
+    50% { transform: scale(1.3); box-shadow: 0 0 10px var(--theme-secondary); }
 }
 
-/* Estilos do Modal de Aprendizado */
-.modal-body {
-    padding-top: 1rem;
-}
-.modal-section {
-    margin-bottom: 1.5rem;
-}
-.modal-section h4 {
-    font-size: 1.2rem;
-    color: var(--primary-color-light);
-    margin-bottom: 0.5rem;
-}
-html.dark-mode .modal-section h4 {
-    color: var(--primary-color-dark);
-}
-.modal-section ol {
-    padding-left: 20px;
-}
-.modal-section ol li {
-    margin-bottom: 0.5rem;
-}
-.modal-section code {
-    background-color: rgba(0,0,0,0.1);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'Courier New', Courier, monospace;
-}
-html.dark-mode .modal-section code {
-    background-color: rgba(255,255,255,0.15);
-}
-.modal-section.tip {
-    background-color: rgba(255, 235, 59, 0.1);
-    border-left: 4px solid #ffeb3b;
-    padding: 1rem;
-    border-radius: 4px;
-}
-.svg-container {
-    background-color: rgba(0,0,0,0.05);
-    border-radius: 8px;
-    padding: 1rem;
+/* --- NAVEGAÇÃO DOS SEMESTRES --- */
+.semester-nav {
+    flex-shrink: 0;
+    text-align: center;
+    padding: 0.5rem;
+    background: var(--theme-panel-bg);
+    border: 1px solid var(--theme-panel-border);
+    border-radius: 12px;
+    max-width: 600px;
+    margin: 0 auto;
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 0.5rem;
 }
-html.dark-mode .svg-container {
-    background-color: rgba(255,255,255,0.03);
+
+.nav-label {
+    font-weight: bold;
+    margin-right: 1rem;
+    color: var(--theme-text-muted);
 }
-.svg-container svg {
-    max-width: 100%;
-    height: auto;
+
+.semester-button {
+    background: transparent;
+    border: 2px solid var(--theme-secondary);
+    color: var(--theme-secondary);
+    font-weight: bold;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
 }
+
+.semester-button:hover, .semester-button.active {
+    background: var(--theme-primary);
+    color: var(--theme-bg); /* Cor de fundo vira cor do texto para contraste */
+    border-color: var(--theme-primary);
+    transform: scale(1.1);
+}
+
+/* --- ESTILOS DO MODAL --- */
+/* (REMOVIDO - O modal não é mais usado nesta página) */
+
+/* Estilo para os SVGs (agora em guia.css) */

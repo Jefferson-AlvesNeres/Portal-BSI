@@ -1,0 +1,261 @@
+/* admin.css */
+/* Tema exclusivo para o Painel de Administração - "Midnight Ops" */
+
+/* --- Variáveis do Tema Admin --- */
+:root, html[data-theme="admin-dark"] body { /* Aplica variáveis ao body no tema */
+    --admin-bg: #0D1117; /* Fundo (Quase Preto) */
+    --admin-panel-bg: #161B22; /* Fundo dos Widgets (Cinza-Azulado Escuro) */
+    --admin-border: #30363D; /* Bordas */
+    --admin-text-primary: #C9D1D9; /* Texto Principal (Cinza Claro) */
+    --admin-text-secondary: #8B949E; /* Texto Secundário (Cinza Médio) */
+    --admin-accent-primary: #3FB950; /* Acento (Verde) */
+    --admin-accent-secondary: #F7B93E; /* Acento Alerta (Âmbar) */
+    --admin-danger: #F85149; /* Perigo (Vermelho) */
+    --admin-shadow: rgba(0, 0, 0, 0.4);
+}
+
+/* --- Estrutura Básica --- */
+/* Força aplicação no body da página admin */
+body {
+    background-color: var(--admin-bg);
+    color: var(--admin-text-primary);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* --- Cabeçalho --- */
+.admin-header {
+    background-color: var(--admin-panel-bg);
+    border-bottom: 1px solid var(--admin-border);
+    padding: 1rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+.admin-header .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.logo-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--admin-accent-primary);
+}
+.logo-title h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+#admin-welcome {
+    color: var(--admin-text-secondary);
+    font-style: italic;
+}
+.admin-nav-link {
+    color: var(--admin-text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+.admin-nav-link:hover {
+    color: var(--admin-accent-primary);
+}
+#admin-logout-btn:hover {
+    color: var(--admin-danger);
+}
+
+/* --- Conteúdo Principal --- */
+.admin-main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    display: grid;
+    gap: 1.5rem;
+}
+
+/* --- Widgets e Cards --- */
+.admin-widget {
+    background-color: var(--admin-panel-bg);
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--admin-shadow);
+    overflow: hidden; /* Para a tabela */
+}
+.admin-widget h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+    margin: 0;
+    border-bottom: 1px solid var(--admin-border);
+    color: var(--admin-text-primary);
+}
+
+/* Grid de Estatísticas */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Ajustado minmax */
+    gap: 1px; /* Cria linhas finas */
+    background-color: var(--admin-border); /* Cor das linhas */
+    border-top: 1px solid var(--admin-border); /* Borda superior */
+}
+.stat-card {
+    background-color: var(--admin-panel-bg);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.stat-value {
+    font-size: 2.2rem; /* Reduzido */
+    font-weight: 700;
+    color: var(--admin-accent-primary);
+    line-height: 1;
+}
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--admin-text-secondary);
+    margin-top: 0.5rem;
+}
+
+/* Gerenciamento de Usuários */
+#user-search-input {
+    display: block; /* Para ocupar largura total */
+    width: calc(100% - 3rem);
+    margin: 1rem 1.5rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--admin-bg);
+    border: 1px solid var(--admin-border);
+    border-radius: 6px;
+    color: var(--admin-text-primary);
+    font-size: 1rem;
+}
+#user-search-input:focus {
+    outline: none;
+    border-color: var(--admin-accent-primary);
+    box-shadow: 0 0 0 3px rgba(63, 185, 80, 0.3);
+}
+.table-container {
+    width: 100%;
+    overflow-x: auto; /* Permite rolagem horizontal */
+}
+#user-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+#user-table th,
+#user-table td {
+    padding: 0.8rem 1.2rem; /* Ajustado padding */
+    text-align: left;
+    border-bottom: 1px solid var(--admin-border);
+    white-space: nowrap;
+    vertical-align: middle; /* Alinha verticalmente */
+}
+#user-table th {
+    background-color: rgba(30, 36, 45, 0.7); /* Fundo th um pouco diferente */
+    font-size: 0.8rem; /* Reduzido */
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--admin-text-secondary);
+    position: sticky; top: 0; /* Cabeçalho fixo na rolagem vertical (se houver) */
+    z-index: 1;
+}
+#user-table td {
+    color: var(--admin-text-primary);
+    font-size: 0.95rem;
+}
+#user-table td.loading-users {
+    text-align: center;
+    color: var(--admin-text-secondary);
+    padding: 2rem;
+    font-style: italic;
+}
+#user-table tr:last-child td {
+    border-bottom: none; /* Remove borda da última linha */
+}
+#user-table tr:hover {
+    background-color: rgba(30, 36, 45, 0.5); /* Efeito hover sutil */
+}
+/* Estilos de Células Específicas */
+#user-table td[data-role="admin"] {
+    color: var(--admin-accent-primary);
+    font-weight: 700;
+}
+#user-table td[data-role="user"] {
+    color: var(--admin-text-secondary);
+}
+/* Ações da Tabela */
+.user-actions { display: flex; gap: 0.5rem; }
+.admin-action-btn { background: none; border: none; cursor: pointer; padding: 0.35rem; border-radius: 4px; transition: background-color 0.2s, color 0.2s; display: flex; align-items: center; justify-content: center; }
+.admin-action-btn svg { width: 18px; height: 18px; display: block; fill: currentColor; } /* Usa fill */
+.admin-action-btn.role-toggle[data-role="user"] { color: var(--admin-accent-primary); }
+.admin-action-btn.role-toggle[data-role="user"]:hover { background-color: rgba(63, 185, 80, 0.1); color: #58a6ff; /* Azul claro no hover */ }
+.admin-action-btn.role-toggle[data-role="admin"] { color: var(--admin-accent-secondary); }
+.admin-action-btn.role-toggle[data-role="admin"]:hover { background-color: rgba(247, 185, 62, 0.1); color: #ffab70; /* Laranja claro no hover */ }
+.admin-action-btn.delete { color: var(--admin-danger); }
+.admin-action-btn.delete:hover { background-color: rgba(248, 81, 73, 0.1); color: #ff7b72; /* Vermelho claro no hover */ }
+
+/* Modal de Confirmação Admin (Adapta o modal base) */
+#admin-confirm-modal .modal-content {
+    background: var(--admin-panel-bg);
+    border-color: var(--admin-border);
+    box-shadow: 0 8px 30px var(--admin-shadow);
+}
+#admin-confirm-modal .modal-header {
+    border-bottom-color: var(--admin-border);
+}
+#admin-confirm-modal .modal-header h2 {
+    color: var(--admin-text-primary);
+}
+#admin-confirm-modal .close-modal {
+    color: var(--admin-text-secondary);
+}
+#admin-confirm-modal .close-modal:hover {
+    color: var(--admin-text-primary);
+}
+#admin-confirm-modal .modal-body {
+    color: var(--admin-text-primary);
+}
+/* Adapta botões do modal */
+#admin-confirm-modal .button-secondary {
+    background-color: #30363D;
+    color: var(--admin-text-primary);
+    border-color: var(--admin-border);
+}
+#admin-confirm-modal .button-secondary:hover {
+    background-color: #484f58;
+    border-color: #586069;
+}
+#admin-confirm-modal .button-danger {
+    background-color: var(--admin-danger);
+    color: #fff;
+}
+#admin-confirm-modal .button-danger:hover {
+    filter: brightness(1.15);
+}
+#admin-confirm-modal .button-primary { /* Caso use primary no futuro */
+    background-color: var(--admin-accent-primary);
+    color: var(--admin-bg);
+}
+#admin-confirm-modal .button-primary:hover {
+    filter: brightness(1.15);
+}
+
+/* Responsividade Básica */
+@media (max-width: 768px) {
+    .admin-header .header-inner { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .header-actions { margin-top: 0.5rem; }
+    .stats-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+    .stat-value { font-size: 1.8rem; }
+    #user-table th, #user-table td { padding: 0.6rem 1rem; }
+}

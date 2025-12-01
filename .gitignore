@@ -1,15 +1,24 @@
-# Dependências do Node
+# Dependências
 node_modules/
 
-# Arquivos de log
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .npm
 
-# Banco de Dados
-database.db
+# Banco de Dados SQLite (ignora journals e backups)
 *.sqlite
+database.db-journal
+database.db-wal
+database.db-shm
 
-# Arquivos do Vercel
+# Arquivos Vercel
 .vercel
+
+# Uploads
+uploads/
+
+# Arquivos de Sistema Operacional
+.DS_Store
+Thumbs.db

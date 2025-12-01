@@ -42,7 +42,11 @@
             </button>
             <div class="header-actions">
                 <a href="login.html" class="login-link-nav">Login</a>
-                <a href="perfil.html" class="profile-link-nav" style="display: none;">Meu Perfil</a>
+                <a href="perfil.html" id="header-avatar-link" class="profile-link-nav" style="display: none;">
+                    <div id="header-avatar-display" class="header-avatar">
+                        <svg id="header-avatar-placeholder" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </div>
+                </a>
                 <a href="#" id="logout-btn" class="logout-link-nav" style="display: none;">Sair</a>
                 <button id="theme-toggle">Modo Escuro</button>
             </div>
@@ -50,32 +54,11 @@
     </header>
 
     <main>
-        <section class="content-section">
-            <h3>Estimativas Salariais: Do Júnior ao Sênior</h3>
-            <p>A área de tecnologia é conhecida pelos salários competitivos. Abaixo estão as estimativas de fato para o mercado brasileiro:</p>
-            <ul>
-                <li><strong>Profissional Júnior:</strong> R$ 3.500 a R$ 6.000.</li>
-                <li><strong>Profissional Pleno:</strong> R$ 6.000 a R$ 12.000.</li>
-                <li><strong>Profissional Sênior ou Especialista:</strong> Acima de R$ 12.000, podendo chegar a R$ 20.000 ou mais.</li>
-            </ul>
-        </section>
-
-        <section class="content-section">
-            <h3>Flexibilidade: Home Office e Horários Adaptáveis</h3>
-            <p>Uma das maiores vantagens da carreira em TI é a flexibilidade. A natureza do trabalho, que é digital, permite que muitas empresas ofereçam modelos de trabalho modernos e desejados.</p>
-        </section>
-    </main>
-
-   
-
-
-
-    <main>
         <section class="page-title">
             <h2>Um Oceano de Oportunidades</h2>
             <p>Explore as carreiras, os salários e a flexibilidade que a área de BSI oferece.</p>
         </section>
-
+        
         <section class="content-section">
             <h3>Estimativas Salariais: Do Júnior ao Sênior</h3>
             <p>A área de tecnologia é conhecida pelos salários competitivos. Abaixo estão as estimativas de fato para o mercado brasileiro, que podem variar conforme a região, especialização e nível de inglês:</p>
@@ -107,15 +90,20 @@
                 <li><strong>Gestão de Projetos e Produtos:</strong> Lidere equipes e o desenvolvimento de novas tecnologias.</li>
             </ul>
         </section>
-    </main>
+        </main>
 
     <footer id="main-footer">
         <p>&copy; 2025 Guia BSI. Todos os direitos reservados. Um projeto de extensão acadêmica.</p>
     </footer>
     <div id="ai-chat-button" class="glass-panel"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
-    <div id="ai-chat-window" class="glass-panel" style="display: none;"><div class="chat-header glass-panel"><h3>Assistente BSI</h3><span id="close-chat">&times;</span></div><div id="chat-messages"><div class="message ai-message">Olá! Sou o assistente virtual do Guia BSI. Como posso ajudar?</div></div><div class="chat-input-container"><input type="text" id="chat-input" placeholder="Digite sua pergunta..."></div></div>
+    <div id="ai-chat-window" class="glass-panel" style="display: none;">
+       <div class="chat-header"><h3>Astro</h3><span id="close-chat">&times;</span></div>
+        <div id="chat-messages"><div class="message ai-message">Olá! Sou o assistente virtual do Guia BSI. Como posso ajudar? Pergunte sobre salário, mercado, matérias, etc.</div></div>
+        <div class="chat-input-container"><input type="text" id="chat-input" placeholder="Digite sua pergunta..."></div>
+    </div>
     
 
     <script src="script.js" defer></script>
+    <script src="chatbot.js" defer></script>
 </body>
 </html>

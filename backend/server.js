@@ -1,367 +1,248 @@
-// server.js (Versão Final com Banco de Dados)
+// backend/server.js
+// Ponto de entrada principal do backend.
 
-// 1. Importa os pacotes
 const express = require('express');
 const cors = require('cors');
-const sqlite3 = require('sqlite3').verbose(); // Driver do banco de dados
-const bcrypt = require('bcrypt'); // Ferramenta de criptografia
+const bcrypt = require('bcryptjs');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const session = require('express-session');
+const db = require('./database.js');
+const { topicContents, svgIcons } = require('./topicData.js');
 
 const app = express();
-const PORT = 3000;
+const port = 3000;
+const ADMIN_EMAIL_SUFFIX = '@admin.bsi';
 
-// 2. Conecta ao arquivo do banco de dados SQLite
-const db = new sqlite3.Database('./database.db', (err) => {
-    if (err) {
-        console.error("Erro ao conectar ao banco de dados:", err.message);
-    } else {
-        console.log('Conectado ao banco de dados SQLite com sucesso.');
-    }
-});
-
-// 3. Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(session({
+    secret: 'segredo-super-forte-bsi-portal',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 24 }
+}));
 
-// 4. Rota de Cadastro (AGORA COM LÓGICA REAL)
+const uploadsDir = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+app.use('/uploads', express.static(uploadsDir));
+
+// Middlewares
+function isLoggedIn(req, res, next) {
+    if (req.session.user) next();
+    else res.status(401).json({ message: "Não autorizado." });
+}
+function isAdmin(req, res, next) {
+    if (req.session.user && req.session.user.role === 'admin') next();
+    else res.status(403).json({ message: "Acesso negado." });
+}
+
+// Configuração Multer
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, uploadsDir),
+    filename: (req, file, cb) => {
+        const userId = req.session.user?.id;
+        if (!userId) return cb(new Error("Sem usuário."), null);
+        const extension = path.extname(file.originalname);
+        const filename = `avatar-${userId}${extension}`;
+        // Limpa avatar antigo
+        fs.readdirSync(uploadsDir)
+          .filter(f => f.startsWith(`avatar-${userId}.`) && f !== filename)
+          .forEach(f => { try { fs.unlinkSync(path.join(uploadsDir, f)); } catch(e){} });
+        cb(null, filename);
+    }
+});
+const upload = multer({ storage });
+
+// --- ROTAS DE AUTENTICAÇÃO ---
+
 app.post('/api/cadastro', (req, res) => {
     const { name, email, password } = req.body;
-
-    // Validação simples para garantir que todos os campos foram enviados
-    if (!name || !email || !password) {
-        return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
+    if (!name || !email || !password || password.length < 8) {
+        return res.status(400).json({ message: "Dados inválidos." });
     }
 
-    // Primeiro, verifica se o email já existe no banco
-    const checkEmailSql = `SELECT * FROM users WHERE email = ?`;
-    db.get(checkEmailSql, [email], (err, row) => {
+    const role = email.toLowerCase().endsWith(ADMIN_EMAIL_SUFFIX) ? 'admin' : 'user';
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(password, salt);
+
+    const sql = `INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)`;
+    db.run(sql, [name, email, hash, role], function(err) {
         if (err) {
-            return res.status(500).json({ message: 'Erro no servidor ao verificar email.', error: err.message });
-        }
-        if (row) {
-            // Se 'row' existir, o email já está cadastrado.
-            return res.status(409).json({ message: 'Este email já está cadastrado.' });
-        }
-
-        // Se o email não existe, criptografa a senha antes de salvar
-        // O número 10 é o "custo" da criptografia, um valor padrão e seguro.
-        bcrypt.hash(password, 10, (err, hashedPassword) => {
-            if (err) {
-                return res.status(500).json({ message: 'Erro ao criptografar a senha.', error: err.message });
+            if (err.message.includes("UNIQUE constraint failed: users.email")) {
+                return res.status(409).json({ message: "Email já cadastrado." });
             }
-
-            // Insere o novo usuário no banco de dados com a senha já criptografada
-            const insertSql = `INSERT INTO users (name, email, password) VALUES (?, ?, ?)`;
-            db.run(insertSql, [name, email, hashedPassword], function(err) {
-                if (err) {
-                    return res.status(500).json({ message: 'Erro ao cadastrar usuário.', error: err.message });
-                }
-                // Se tudo deu certo, envia uma resposta de sucesso
-                res.status(201).json({ message: 'Usuário cadastrado com sucesso!', userId: this.lastID });
-            });
+            return res.status(500).json({ message: "Erro interno." });
+        }
+        // Login automático após cadastro
+        const userId = this.lastID;
+        db.get("SELECT id, name, email, avatar, role, created_at FROM users WHERE id = ?", [userId], (err, user) => {
+            if (err || !user) return res.status(500).json({ message: "Erro ao logar." });
+            req.session.user = user;
+            res.status(201).json({ message: "Cadastro OK!", user });
         });
     });
 });
 
-
-
-
-// ... (todo o seu código da rota de cadastro vem antes) ...
-
-// --- ROTA DE LOGIN ATUALIZADA ---
 app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
-    if (!email || !password) {
-        return res.status(400).json({ message: 'Email e senha são obrigatórios.' });
-    }
+    const sql = "SELECT * FROM users WHERE email = ?";
+    db.get(sql, [email], (err, user) => {
+        if (err) return res.status(500).json({ message: "Erro interno." });
+        if (!user || !bcrypt.compareSync(password, user.password)) {
+            return res.status(401).json({ message: "Email ou senha inválidos." });
+        }
+        const userSessionData = {
+            id: user.id, name: user.name, email: user.email,
+            avatar: user.avatar, role: user.role, created_at: user.created_at
+        };
+        req.session.user = userSessionData;
+        res.status(200).json({ message: "Login OK!", user: userSessionData });
+    });
+});
 
-    const findUserSql = `SELECT * FROM users WHERE email = ?`;
-    db.get(findUserSql, [email], (err, user) => {
+app.post('/api/logout', (req, res) => {
+    req.session.destroy(() => {
+        res.clearCookie('connect.sid');
+        res.status(200).json({ message: "Saiu." });
+    });
+});
+
+// --- ROTAS DE PERFIL ---
+
+app.put('/api/perfil', isLoggedIn, (req, res) => {
+    const { name, email } = req.body;
+    const userId = req.session.user.id;
+    if (!name || !email) return res.status(400).json({ message: "Dados incompletos." });
+
+    const sql = `UPDATE users SET name = ?, email = ? WHERE id = ?`;
+    db.run(sql, [name, email, userId], function(err) {
         if (err) {
-            return res.status(500).json({ message: 'Erro no servidor.', error: err.message });
+            if (err.message.includes("UNIQUE")) return res.status(409).json({ message: "Email em uso." });
+            return res.status(500).json({ message: "Erro ao atualizar." });
         }
-        if (!user) {
-            return res.status(401).json({ message: 'Email ou senha incorretos.' });
-        }
+        req.session.user.name = name;
+        req.session.user.email = email;
+        res.json({ message: "Perfil atualizado!", user: { name, email } });
+    });
+});
 
-        bcrypt.compare(password, user.password, (err, isMatch) => {
-            if (err) {
-                return res.status(500).json({ message: 'Erro ao comparar senhas.', error: err.message });
-            }
-            if (isMatch) {
-                // MUDANÇA AQUI: Enviamos também o 'created_at'
-                res.status(200).json({ 
-                    message: 'Login bem-sucedido!', 
-                    user: { 
-                        id: user.id, 
-                        name: user.name, 
-                        email: user.email, 
-                        created_at: user.created_at // Envia a data de criação
-                    } 
-                });
-            } else {
-                res.status(401).json({ message: 'Email ou senha incorretos.' });
-            }
+app.put('/api/perfil/senha', isLoggedIn, (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.session.user.id;
+    if (!currentPassword || !newPassword || newPassword.length < 8) return res.status(400).json({ message: "Dados inválidos." });
+
+    db.get("SELECT password FROM users WHERE id = ?", [userId], (err, user) => {
+        if (!user || !bcrypt.compareSync(currentPassword, user.password)) {
+            return res.status(401).json({ message: "Senha atual incorreta." });
+        }
+        const hash = bcrypt.hashSync(newPassword, 10);
+        db.run("UPDATE users SET password = ? WHERE id = ?", [hash, userId], (err) => {
+            if (err) return res.status(500).json({ message: "Erro ao salvar senha." });
+            res.json({ message: "Senha alterada!" });
         });
     });
 });
 
+app.delete('/api/perfil/:id', isLoggedIn, (req, res) => {
+    const id = parseInt(req.params.id);
+    if (req.session.user.id !== id) return res.status(403).json({ message: "Proibido." });
+    
+    // Limpa avatar
+    fs.readdirSync(uploadsDir).filter(f => f.startsWith(`avatar-${id}.`))
+      .forEach(f => { try { fs.unlinkSync(path.join(uploadsDir, f)); } catch(e){} });
 
-// ... (código da rota de login vem antes) ...
+    db.run("DELETE FROM users WHERE id = ?", [id], (err) => {
+        if (err) return res.status(500).json({ message: "Erro ao deletar." });
+        req.session.destroy(() => res.json({ message: "Conta deletada." }));
+    });
+});
 
-// --- NOVA ROTA PARA EDITAR PERFIL ---
-app.put('/api/perfil', (req, res) => {
-    // Pegamos o ID, nome e email do corpo da requisição
-    const { id, name, email } = req.body;
+// --- ROTAS DE AVATAR ---
 
-    // 1. Validação básica dos dados recebidos
-    if (!id || !name || !email) {
-        return res.status(400).json({ message: 'Dados incompletos para atualização.' });
-    }
+app.put('/api/perfil/avatar', isLoggedIn, (req, res) => {
+    const { avatarKey } = req.body;
+    const userId = req.session.user.id;
+    // Limpa avatar customizado
+    fs.readdirSync(uploadsDir).filter(f => f.startsWith(`avatar-${userId}.`))
+      .forEach(f => { try { fs.unlinkSync(path.join(uploadsDir, f)); } catch(e){} });
+      
+    db.run("UPDATE users SET avatar = ? WHERE id = ?", [avatarKey, userId], (err) => {
+        if (err) return res.status(500).json({ message: "Erro ao salvar avatar." });
+        req.session.user.avatar = avatarKey;
+        res.json({ message: "Avatar salvo!", avatar: avatarKey });
+    });
+});
 
-    // 2. Verifica se o novo email já está sendo usado por OUTRO usuário
-    const checkEmailSql = `SELECT * FROM users WHERE email = ? AND id != ?`;
-    db.get(checkEmailSql, [email, id], (err, row) => {
-        if (err) {
-            return res.status(500).json({ message: 'Erro no servidor ao verificar email.', error: err.message });
-        }
-        if (row) {
-            // Se encontrou uma linha, o email já pertence a outro usuário
-            return res.status(409).json({ message: 'Este email já está em uso por outra conta.' });
-        }
+app.post('/api/perfil/upload-avatar', isLoggedIn, upload.single('avatarFile'), (req, res) => {
+    if (!req.file) return res.status(400).json({ message: "Erro no upload." });
+    const userId = req.session.user.id;
+    const path = `uploads/${req.file.filename}`;
+    
+    db.run("UPDATE users SET avatar = ? WHERE id = ?", [path, userId], (err) => {
+        if (err) return res.status(500).json({ message: "Erro ao salvar caminho." });
+        req.session.user.avatar = path;
+        res.json({ message: "Upload OK!", avatar: path });
+    });
+});
 
-        // 3. Se o email estiver livre, atualiza os dados do usuário no banco
-        const updateSql = `UPDATE users SET name = ?, email = ? WHERE id = ?`;
-        db.run(updateSql, [name, email, id], function(err) {
-            if (err) {
-                return res.status(500).json({ message: 'Erro ao atualizar o perfil.', error: err.message });
-            }
-            // Se a atualização foi bem-sucedida, envia os novos dados de volta
-            res.status(200).json({ 
-                message: 'Perfil atualizado com sucesso!',
-                user: { id, name, email } 
-            });
+app.get('/api/perfil/check-avatar/:id', isLoggedIn, (req, res) => {
+    if (req.session.user.id != req.params.id) return res.status(403).send();
+    db.get("SELECT avatar FROM users WHERE id = ?", [req.params.id], (err, row) => {
+        if (row) res.json({ avatar: row.avatar });
+        else res.status(404).send();
+    });
+});
+
+// --- ROTAS DA TRILHA ---
+
+app.get('/api/trilha/:userId', isLoggedIn, (req, res) => {
+    if (req.session.user.id != req.params.userId) return res.status(403).send();
+    const sql = `SELECT t.id, t.name, t.semester, IFNULL(pu.completed, 0) as completed 
+                 FROM topicos_trilha t LEFT JOIN progresso_usuario pu ON t.id = pu.topic_id AND pu.user_id = ? 
+                 ORDER BY t.semester, t.id`;
+    db.all(sql, [req.params.userId], (err, rows) => {
+        if (err) return res.status(500).send();
+        res.json(rows);
+    });
+});
+
+app.post('/api/trilha/complete', isLoggedIn, (req, res) => {
+    const { topicId, completed } = req.body;
+    const userId = req.session.user.id;
+    const sql = `INSERT INTO progresso_usuario (user_id, topic_id, completed) VALUES (?, ?, ?)
+                 ON CONFLICT(user_id, topic_id) DO UPDATE SET completed = excluded.completed`;
+    db.run(sql, [userId, topicId, completed ? 1 : 0], (err) => {
+        if (err) return res.status(500).send();
+        res.json({ message: "OK" });
+    });
+});
+
+app.get('/api/progresso/:userId', isLoggedIn, (req, res) => {
+    if (req.session.user.id != req.params.userId) return res.status(403).send();
+    db.get("SELECT COUNT(*) as c FROM progresso_usuario WHERE user_id = ? AND completed = 1", [req.params.userId], (e, r1) => {
+        db.get("SELECT COUNT(*) as c FROM topicos_trilha", (e, r2) => {
+            const pct = r2.c ? Math.round((r1.c / r2.c) * 100) : 0;
+            res.json({ percentage: pct });
         });
     });
 });
 
-// ... (código da rota de editar perfil vem antes) ...
+app.get('/api/topic-data/:id', isLoggedIn, (req, res) => {
+    const content = topicContents[req.params.id];
+    if (content) res.json({ ...content, svg: svgIcons[content.svgKey] });
+    else res.status(404).send();
+});
 
-// --- NOVA ROTA PARA ALTERAR A SENHA ---
-app.put('/api/perfil/senha', (req, res) => {
-    const { id, currentPassword, newPassword } = req.body;
-
-    // 1. Validação básica
-    if (!id || !currentPassword || !newPassword) {
-        return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
-    }
-
-    // 2. Encontra o usuário no banco de dados
-    const findUserSql = `SELECT * FROM users WHERE id = ?`;
-    db.get(findUserSql, [id], (err, user) => {
-        if (err) {
-            return res.status(500).json({ message: 'Erro no servidor.', error: err.message });
-        }
-        if (!user) {
-            return res.status(404).json({ message: 'Usuário não encontrado.' });
-        }
-
-        // 3. Verifica se a "senha atual" fornecida está correta
-        bcrypt.compare(currentPassword, user.password, (err, isMatch) => {
-            if (err) {
-                return res.status(500).json({ message: 'Erro ao verificar senha.', error: err.message });
-            }
-            if (!isMatch) {
-                // Se as senhas não batem, retorna um erro de não autorizado
-                return res.status(401).json({ message: 'Senha atual incorreta.' });
-            }
-
-            // 4. Se a senha atual estiver correta, criptografa a NOVA senha
-            bcrypt.hash(newPassword, 10, (err, hashedPassword) => {
-                if (err) {
-                    return res.status(500).json({ message: 'Erro ao criptografar nova senha.', error: err.message });
-                }
-
-                // 5. Atualiza o banco de dados com a nova senha criptografada
-                const updatePasswordSql = `UPDATE users SET password = ? WHERE id = ?`;
-                db.run(updatePasswordSql, [hashedPassword, id], function(err) {
-                    if (err) {
-                        return res.status(500).json({ message: 'Erro ao atualizar a senha.', error: err.message });
-                    }
-                    res.status(200).json({ message: 'Senha alterada com sucesso!' });
-                });
-            });
-        });
+// --- ROTAS ADMIN ---
+app.get('/api/admin/users', isLoggedIn, isAdmin, (req, res) => {
+    db.all("SELECT id, name, email, role, created_at FROM users WHERE id != ? ORDER BY created_at DESC", [req.session.user.id], (err, rows) => {
+        if (err) return res.status(500).send();
+        res.json(rows);
     });
 });
+// (Outras rotas admin simplificadas se necessário, mas o foco era remover username)
 
-// ... (código da rota de alterar senha vem antes) ...
-
-// --- NOVA ROTA PARA DELETAR A CONTA ---
-// Usamos o método DELETE e esperamos um ID na URL (ex: /api/perfil/12)
-app.delete('/api/perfil/:id', (req, res) => {
-    const { id } = req.params; // Pega o ID dos parâmetros da URL
-
-    const deleteSql = `DELETE FROM users WHERE id = ?`;
-
-    db.run(deleteSql, [id], function(err) {
-        if (err) {
-            return res.status(500).json({ message: 'Erro no servidor ao deletar a conta.', error: err.message });
-        }
-        // this.changes retorna o número de linhas afetadas. Se for 0, o usuário não foi encontrado.
-        if (this.changes === 0) {
-            return res.status(404).json({ message: 'Usuário não encontrado.' });
-        }
-        // Se a exclusão foi bem-sucedida
-        res.status(200).json({ message: 'Conta deletada com sucesso!' });
-    });
-});
-
-// ... (código da rota de deletar a conta vem antes) ...
-
-// --- NOVAS ROTAS PARA A TRILHA DE ESTUDOS ---
-
-// ROTA 1: BUSCAR A TRILHA E O PROGRESSO DO USUÁRIO
-// GET /api/trilha/:userId -> Retorna todos os tópicos e marca quais estão completos para o usuário.
-app.get('/api/trilha/:userId', (req, res) => {
-    const { userId } = req.params;
-
-    // Este comando SQL é mais avançado. Ele busca todos os tópicos e, usando um LEFT JOIN,
-    // verifica na tabela user_progress se aquele usuário completou aquele tópico.
-    // O resultado é uma lista de todos os tópicos com um campo extra 'completed' (1 para sim, 0 para não).
-    const sql = `
-        SELECT
-            t.id,
-            t.name,
-            CASE WHEN up.user_id IS NOT NULL THEN 1 ELSE 0 END as completed
-        FROM
-            topics t
-        LEFT JOIN
-            user_progress up ON t.id = up.topic_id AND up.user_id = ?
-    `;
-
-    db.all(sql, [userId], (err, rows) => {
-        if (err) {
-            return res.status(500).json({ message: 'Erro ao buscar a trilha de estudos.', error: err.message });
-        }
-        res.status(200).json(rows);
-    });
-});
-
-
-// ROTA 2: ATUALIZAR O PROGRESSO DE UM TÓPICO
-// POST /api/trilha/progresso -> Recebe o ID do usuário, o ID do tópico e se ele foi completado.
-app.post('/api/trilha/progresso', (req, res) => {
-    const { userId, topicId, completed } = req.body;
-
-    if (completed) {
-        // Se o tópico foi marcado como completo, insere o registro na tabela.
-        // "INSERT OR IGNORE" previne erros se o registro já existir.
-        const sql = `INSERT OR IGNORE INTO user_progress (user_id, topic_id) VALUES (?, ?)`;
-        db.run(sql, [userId, topicId], function(err) {
-            if (err) {
-                return res.status(500).json({ message: 'Erro ao salvar progresso.', error: err.message });
-            }
-            res.status(200).json({ message: 'Progresso salvo!' });
-        });
-    } else {
-        // Se o tópico foi desmarcado, remove o registro da tabela.
-        const sql = `DELETE FROM user_progress WHERE user_id = ? AND topic_id = ?`;
-        db.run(sql, [userId, topicId], function(err) {
-            if (err) {
-                return res.status(500).json({ message: 'Erro ao remover progresso.', error: err.message });
-            }
-            res.status(200).json({ message: 'Progresso removido!' });
-        });
-    }
-});
-
-// ... (código da rota de deletar a conta vem antes) ...
-
-// --- NOVAS ROTAS PARA A TRILHA DE ESTUDOS ---
-
-// ROTA 1: BUSCAR A TRILHA E O PROGRESSO DO USUÁRIO
-// GET /api/trilha/:userId -> Retorna todos os tópicos e marca quais estão completos para o usuário.
-app.get('/api/trilha/:userId', (req, res) => {
-    const { userId } = req.params;
-
-    // Este comando SQL busca todos os tópicos e, usando um LEFT JOIN,
-    // verifica na tabela user_progress se aquele usuário completou aquele tópico.
-    const sql = `
-        SELECT
-            t.id,
-            t.name,
-            CASE WHEN up.user_id IS NOT NULL THEN 1 ELSE 0 END as completed
-        FROM
-            topics t
-        LEFT JOIN
-            user_progress up ON t.id = up.topic_id AND up.user_id = ?
-        ORDER BY
-            t.id
-    `;
-
-    db.all(sql, [userId], (err, rows) => {
-        if (err) {
-            return res.status(500).json({ message: 'Erro ao buscar a trilha de estudos.', error: err.message });
-        }
-        res.status(200).json(rows);
-    });
-});
-
-
-// ROTA 2: ATUALIZAR O PROGRESSO DE UM TÓPICO
-// POST /api/trilha/progresso -> Recebe o ID do usuário, o ID do tópico e se ele foi completado.
-app.post('/api/trilha/progresso', (req, res) => {
-    const { userId, topicId, completed } = req.body;
-
-    if (completed) {
-        // Se o tópico foi marcado como completo, insere o registro na tabela.
-        const sql = `INSERT OR IGNORE INTO user_progress (user_id, topic_id) VALUES (?, ?)`;
-        db.run(sql, [userId, topicId], function(err) {
-            if (err) {
-                return res.status(500).json({ message: 'Erro ao salvar progresso.', error: err.message });
-            }
-            res.status(200).json({ message: 'Progresso salvo!' });
-        });
-    } else {
-        // Se o tópico foi desmarcado, remove o registro da tabela.
-        const sql = `DELETE FROM user_progress WHERE user_id = ? AND topic_id = ?`;
-        db.run(sql, [userId, topicId], function(err) {
-            if (err) {
-                return res.status(500).json({ message: 'Erro ao remover progresso.', error: err.message });
-            }
-            res.status(200).json({ message: 'Progresso removido!' });
-        });
-    }
-});
-
-
-// 5. Inicia o servidor
-app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}!`);
-});
-
-// Em server.js, antes do app.listen
-
-// --- NOVA ROTA PARA BUSCAR O PROGRESSO GERAL ---
-app.get('/api/progresso/:userId', (req, res) => {
-    const { userId } = req.params;
-    let totalTopics = 0;
-    let completedTopics = 0;
-
-    // 1. Conta o total de tópicos
-    db.get(`SELECT COUNT(*) as total FROM topics`, [], (err, row) => {
-        if (err) return res.status(500).json({ message: "Erro ao contar tópicos." });
-        totalTopics = row.total;
-
-        // 2. Conta os tópicos completos do usuário
-        db.get(`SELECT COUNT(*) as completed FROM user_progress WHERE user_id = ?`, [userId], (err, row) => {
-            if (err) return res.status(500).json({ message: "Erro ao contar progresso." });
-            completedTopics = row.completed;
-
-            // 3. Calcula e retorna a porcentagem
-            const percentage = totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
-            res.status(200).json({ percentage });
-        });
-    });
-});
+app.listen(port, () => console.log(`Servidor rodando em http://localhost:${port}`));

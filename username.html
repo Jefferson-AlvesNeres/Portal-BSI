@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Definir Username - Guia BSI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="background-animation"><div id="stars1"></div><div id="stars2"></div><div id="stars3"></div></div>
+    <header>
+        <div class="header-inner">
+            <a href="index.html" class="logo-link"><img src="logo.svg" alt="Logo Guia BSI" class="logo-img"></a>
+            <nav>
+                <ul><li><a href="index.html">Início</a></li><li><a href="trilha.html">Guia</a></li><li><a href="perfil.html" class="active">Perfil</a></li></ul>
+            </nav>
+            <div class="header-actions">
+                <a href="perfil.html" id="header-avatar-link" class="profile-link-nav"><div id="header-avatar-display" class="header-avatar"></div></a>
+                <a href="#" id="logout-btn" class="logout-link-nav">Sair</a>
+                <button id="theme-toggle">Modo Escuro</button>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="auth-container">
+            <form class="auth-form glass-panel" id="username-form">
+                <h2>Defina seu Username</h2>
+                <p class="auth-switch" style="margin-bottom: 1.5rem; text-align: center;">Sua identidade única no site.</p>
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username-input" name="username" placeholder="SeuApelidoUnico" required minlength="3" maxlength="20" pattern="^[a-zA-Z0-9_]+$">
+                    <span class="error-message" id="username-error"></span>
+                </div>
+                <div class="danger-zone" style="margin-top: 0; margin-bottom: 1.5rem; padding: 1rem;">
+                    <h4 style="margin-bottom: 0.5rem;">Atenção!</h4>
+                    <p style="margin-bottom: 0;">Você só poderá definir seu username <strong>uma única vez</strong>. Escolha com sabedoria.</p>
+                </div>
+                <button type="submit" class="auth-button" id="username-submit-btn">Salvar Username</button>
+                <p class="auth-switch"><a href="perfil.html" style="font-weight: normal;">Voltar para o Perfil</a></p>
+            </form>
+        </div>
+    </main>
+    <script src="script.js" defer></script>
+    <script src="username.js" defer></script>
+</body>
+</html>

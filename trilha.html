@@ -1,141 +1,21 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" data-theme="dark"> 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trilha de Estudos - Guia BSI</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="trilha.css">
+    <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jornada das Constelações - Guia BSI</title>
+    <link rel="stylesheet" href="style.css"> <link rel="stylesheet" href="guia.css">
 </head>
-<body class="index-page">
-    <div id="background-animation"><div id="stars1"></div><div id="stars2"></div><div id="stars3"></div></div>
-
-    <div id="index-wrapper">
-
-        <section class="hero-section glass-panel">
-            <h2>Sua Carreira em Tecnologia, com Liberdade para Viver Onde Quiser.</h2>
-            <p>Descubra a graduação com alta demanda, salários atrativos e a flexibilidade do trabalho remoto.</p>
-        </section>
-
-        <header id="index-header" class="glass-panel">
-            <h1>Portal BSI</h1>
-            <nav>
-                <ul>
-                    <li><a href="index.html" class="active">Início</a></li>
-                    <li><a href="sobre-bsi.html">O que é BSI?</a></li>
-                    <li><a href="mercado-trabalho.html">Mercado de Trabalho</a></li>
-                    <li><a href="comparativo-cursos.html">BSI vs. Outros Cursos</a></li>
-                </ul>
-            </nav>
-            <button id="theme-toggle">Modo Escuro</button>
-        </header>
-
-
-    <main>
-        <section class="page-title">
-            <h2>Sua Trilha de Estudos BSI</h2>
-            <p>Marque os tópicos concluídos e acompanhe sua jornada do primeiro ao último semestre.</p>
-        </section>
-
-        <section class="progress-section glass-panel">
-            <h3>Seu Progresso Total na Graduação</h3>
-            <div class="progress-bar-container">
-                <div class="progress-bar-fill" id="total-progress-bar" style="width: 0%;"></div>
-            </div>
-            <span class="progress-text" id="total-progress-text">0% Concluído</span>
-        </section>
-
-        <div class="modules-container">
-            <details class="module-accordion glass-panel">
-                <summary>1º Semestre: A Base de Tudo</summary>
-                <ul class="topic-list">
-                    <li><label><input type="checkbox" data-topic-id="1">Introdução à Computação</label></li>
-                    <li><label><input type="checkbox" data-topic-id="2">Lógica de Programação e Algoritmos</label></li>
-                    <li><label><input type="checkbox" data-topic-id="3">Matemática Discreta</label></li>
-                </ul>
-            </details>
-
-            <details class="module-accordion glass-panel">
-                <summary>2º Semestre: Primeiros Códigos</summary>
-                <ul class="topic-list">
-                    <li><label><input type="checkbox" data-topic-id="4">Programação Estruturada (com C)</label></li>
-                    <li><label><input type="checkbox" data-topic-id="5">Fundamentos de Sistemas de Informação</label></li>
-                    <li><label><input type="checkbox" data-topic-id="6">Cálculo I</label></li>
-                </ul>
-            </details>
-
-            <details class="module-accordion glass-panel">
-                <summary>3º Semestre: Paradigmas e Dados</summary>
-                <ul class="topic-list">
-                    <li><label><input type="checkbox" data-topic-id="7">Programação Orientada a Objetos (com Java)</label></li>
-                    <li><label><input type="checkbox" data-topic-id="8">Estrutura de Dados I</label></li>
-                    <li><label><input type="checkbox" data-topic-id="9">Modelagem de Banco de Dados</label></li>
-                </ul>
-            </details>
-
-            <details class="module-accordion glass-panel">
-                <summary>4º Semestre: Construindo Sistemas</summary>
-                <ul class="topic-list">
-                    <li><label><input type="checkbox" data-topic-id="10">Banco de Dados (SQL)</label></li>
-                    <li><label><input type="checkbox" data-topic-id="11">Engenharia de Software I</label></li>
-                    <li><label><input type="checkbox" data-topic-id="12">Sistemas Operacionais</label></li>
-                    <li><label><input type="checkbox" data-topic-id="13">Redes de Computadores I</label></li>
-                </ul>
-            </details>
-
-            <details class="module-accordion glass-panel">
-                <summary>5º Semestre: A Web e a Gestão</summary>
-                <ul class="topic-list">
-                    <li><label><input type="checkbox" data-topic-id="14">Desenvolvimento Web: Frontend (HTML, CSS, JS)</label></li>
-                    <li><label><input type="checkbox" data-topic-id="15">Análise e Projeto de Sistemas</label></li>
-                    <li><label><input type="checkbox" data-topic-id="16">Gestão de Projetos de TI (PMBOK)</label></li>
-                </ul>
-            </details>
-
-            <details class="module-accordion glass-panel">
-                <summary>6º Semestre: Frameworks e Segurança</summary>
-                <ul class="topic-list">
-                    <li><label><input type="checkbox" data-topic-id="17">Desenvolvimento Web: Backend (Node.js/Express)</label></li>
-                    <li><label><input type="checkbox" data-topic-id="18">Fundamentos de Segurança da Informação</label></li>
-                    <li><label><input type="checkbox" data-topic-id="19">Interação Humano-Computador (IHC/UX)</label></li>
-                </ul>
-            </details>
-
-            <details class="module-accordion glass-panel">
-                <summary>7º Semestre: Tópicos Avançados</summary>
-                <ul class="topic-list">
-                    <li><label><input type="checkbox" data-topic-id="20">Inteligência Artificial e Machine Learning</label></li>
-                    <li><label><input type="checkbox" data-topic-id="21">Computação em Nuvem (Cloud Computing)</label></li>
-                    <li><label><input type="checkbox" data-topic-id="22">Projeto de TCC I</label></li>
-                </ul>
-            </details>
-
-            <details class="module-accordion glass-panel">
-                <summary>8º Semestre: Preparação Profissional</summary>
-                <ul class="topic-list">
-                    <li><label><input type="checkbox" data-topic-id="23">DevOps e Implantação Contínua</label></li>
-                    <li><label><input type="checkbox" data-topic-id="24">Soft Skills e Preparação para Entrevistas</label></li>
-                    <li><label><input type="checkbox" data-topic-id="25">Projeto de TCC II e Apresentação</label></li>
-                </ul>
-            </details>
-        </div>
-
-        <div id="topic-info-modal" class="modal-overlay">
-            <div class="modal-content glass-panel">
-                <div class="modal-header">
-                    <h2 id="modal-topic-title">Título do Tópico</h2>
-                    <span class="close-modal" id="close-topic-modal-btn">&times;</span>
-                </div>
-                <div id="modal-topic-content"></div>
-            </div>
-        </div>
+<body class="trilha-page">
+    <div id="background-animation">...</div>
+    <header class="trilha-header">...</header>
+    <nav class="guia-nav"> <a href="trilha.html" class="guia-nav-link active">...<span>Jornada</span></a>
+        <a href="guia-programacao.html" class="guia-nav-link">...<span>Programação</span></a>
+    </nav>
+    <main class="trilha-main">
+        <div id="sky-container" class="sky-container glass-panel"><div id="constellation-map"></div></div>
+        <nav class="semester-nav">...</nav>
     </main>
-
-    <footer id="main-footer">
-        <p>&copy; 2025 Guia BSI. Todos os direitos reservados.</p>
-    </footer>
-
-    <script src="script.js" defer></script>
+    <script src="script.js" defer></script> 
     <script src="trilha.js" defer></script>
 </body>
 </html>
