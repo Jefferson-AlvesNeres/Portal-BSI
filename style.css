@@ -63,10 +63,31 @@ html.dark-mode {
 
 /* --- 2. Estilos Globais --- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { background-color: var(--background-color-light); transition: background-color 0.8s ease; scroll-behavior: smooth; }
-html.dark-mode { background-color: var(--background-color-dark); }
-body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden; /* ISSO TRAVA O MOVIMENTO LATERAL */
+    position: relative; /* Ajuda a conter elementos absolutos */
+    margin: 0;
+    padding: 0;
+}
+
+html { 
+    background-color: var(--background-color-light); 
+    transition: background-color 0.8s ease; 
+    scroll-behavior: smooth; 
+}
+
+body { 
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+    line-height: 1.7; 
+    background-color: transparent; 
+    color: var(--text-color-light); 
+    transition: color 0.5s ease; 
+    min-height: 100vh; 
+    display: flex; 
+    flex-direction: column; 
+}html.dark-mode { background-color: var(--background-color-dark); }    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     line-height: 1.7;
     background-color: transparent;
     color: var(--text-color-light);
@@ -78,7 +99,7 @@ body {
     
     overflow-x: hidden; 
     width: 100%;
-}html.dark-mode body { color: var(--text-color-dark); }
+html.dark-mode body { color: var(--text-color-dark); }
 
 main { flex-grow: 1; padding: 2rem 1rem; max-width: 900px; margin: 0 auto; width: 100%; }
 img, svg { max-width: 100%; height: auto; display: block; }
