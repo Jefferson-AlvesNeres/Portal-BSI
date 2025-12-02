@@ -7,11 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="background-animation">
-        <div id="stars1"></div>
-        <div id="stars2"></div>
-        <div id="stars3"></div>
-    </div>
+    <div id="background-animation"></div>
 
     <header>
         <div class="header-inner">
@@ -28,9 +24,7 @@
                     <li><a href="admin.html" id="admin-link-nav" style="display: none; color: var(--danger-color-light);">Admin</a></li>
                 </ul>
             </nav>
-            <button id="mobile-nav-toggle" aria-label="Abrir menu">
-                <span class="bar"></span><span class="bar"></span><span class="bar"></span>
-            </button>
+            <button id="mobile-nav-toggle" aria-label="Abrir menu"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
             <div class="header-actions">
                 <a href="login.html" class="login-link-nav">Login</a>
                 <a href="perfil.html" id="header-avatar-link" class="profile-link-nav" style="display: none;">
@@ -50,7 +44,8 @@
                 <div class="profile-header">
                     <div class="profile-avatar">
                         <div id="profile-avatar-placeholder"></div>
-                        <div class="avatar-interactive-overlay"></div>
+                        <div class="avatar-interactive-overlay">
+                            </div>
                     </div>
                     <div class="profile-details">
                         <h1 id="profile-name">Carregando...</h1>
@@ -78,37 +73,22 @@
                     <h4>Zona de Perigo</h4>
                     <button class="button-danger" id="delete-account-btn">Deletar Minha Conta</button>
                 </div>
-
             </div>
         </div>
 
         <div id="avatar-choice-modal" class="modal-overlay">
             <div class="modal-content glass-panel">
-                <div class="modal-header">
-                    <h2>Escolha seu Avatar</h2>
-                    <span class="close-modal" id="close-avatar-modal-btn">&times;</span>
-                </div>
-                <div class="modal-body avatar-options-container">
-                    <p>Carregando opções...</p>
-                </div>
+                <div class="modal-header"><h2>Escolha seu Avatar</h2><span class="close-modal" id="close-avatar-modal-btn">&times;</span></div>
+                <div class="modal-body avatar-options-container"><p>Carregando...</p></div>
             </div>
         </div>
 
         <div id="edit-profile-modal" class="modal-overlay">
              <div class="modal-content glass-panel">
-                <div class="modal-header">
-                    <h2>Editar Informações</h2>
-                    <span class="close-modal" id="close-modal-btn">&times;</span>
-                </div>
+                <div class="modal-header"><h2>Editar Informações</h2><span class="close-modal" id="close-modal-btn">&times;</span></div>
                 <form id="edit-profile-form" class="modal-body">
-                    <div class="input-group">
-                        <label for="edit-name">Nome Completo</label>
-                        <input type="text" id="edit-name" value="">
-                    </div>
-                    <div class="input-group">
-                        <label for="edit-email">Email</label>
-                        <input type="email" id="edit-email" value="">
-                    </div>
+                    <div class="input-group"><label>Nome Completo</label><input type="text" id="edit-name"></div>
+                    <div class="input-group"><label>Email</label><input type="email" id="edit-email"></div>
                     <button type="submit" class="button-primary">Salvar Alterações</button>
                 </form>
             </div>
@@ -116,31 +96,17 @@
 
         <div id="change-password-modal" class="modal-overlay">
             <div class="modal-content glass-panel">
-                <div class="modal-header">
-                    <h2>Alterar Senha</h2>
-                    <span class="close-modal" id="close-password-modal-btn">&times;</span>
-                </div>
+                <div class="modal-header"><h2>Alterar Senha</h2><span class="close-modal" id="close-password-modal-btn">&times;</span></div>
                 <form id="change-password-form" class="modal-body">
-                    <div class="input-group">
-                        <label for="current-password">Senha Atual</label>
-                        <input type="password" id="current-password" placeholder="Digite sua senha atual" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="new-password">Nova Senha</label>
-                        <input type="password" id="new-password" placeholder="Mínimo 8 caracteres" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="confirm-new-password">Confirmar Nova Senha</label>
-                        <input type="password" id="confirm-new-password" placeholder="Repita a nova senha" required>
-                    </div>
+                    <div class="input-group"><label>Senha Atual</label><input type="password" id="current-password" required></div>
+                    <div class="input-group"><label>Nova Senha</label><input type="password" id="new-password" required></div>
+                    <div class="input-group"><label>Confirmar</label><input type="password" id="confirm-new-password" required></div>
                     <button type="submit" class="button-primary">Salvar Nova Senha</button>
                 </form>
             </div>
         </div>
-
     </main>
 
     <script src="script.js" defer></script>
-    <script src="profile.js" defer></script>
 </body>
 </html>

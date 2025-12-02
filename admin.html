@@ -15,7 +15,7 @@
                 <h1>Painel de Administração</h1>
             </div>
             <div class="header-actions">
-                <span id="admin-welcome">Olá, admin!</span>
+                <span id="admin-welcome">Admin</span>
                 <a href="index.html" class="admin-nav-link">Voltar ao Site</a>
                 <a href="#" id="admin-logout-btn" class="admin-nav-link">Sair</a>
             </div>
@@ -23,48 +23,62 @@
     </header>
 
     <main class="admin-main">
-        <section class="admin-widget" id="stats-widget">
-            <h2>Visão Geral do Site</h2>
+        <section class="admin-widget">
+            <h2>Estatísticas</h2>
             <div class="stats-grid">
-                <div class="stat-card"><span class="stat-value" id="stat-total-users">--</span><span class="stat-label">Usuários</span></div>
-                <div class="stat-card"><span class="stat-value" id="stat-total-topics">--</span><span class="stat-label">Tópicos</span></div>
-                <div class="stat-card"><span class="stat-value" id="stat-total-completions">--</span><span class="stat-label">Conclusões</span></div>
+                <div class="stat-card">
+                    <span class="stat-value" id="stat-total-users">0</span>
+                    <span class="stat-label">Usuários Cadastrados</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="stat-total-messages">0</span>
+                    <span class="stat-label">Mensagens de Contato</span>
+                </div>
             </div>
         </section>
 
-        <section class="admin-widget" id="user-management-widget">
+        <section class="admin-widget" style="margin-top: 2rem;">
+            <h2>Mensagens de Contato</h2>
+            <div class="table-container">
+                <table id="messages-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Remetente</th>
+                            <th>Assunto</th>
+                            <th>Mensagem</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="messages-list-body">
+                        <tr><td colspan="5" class="loading-users">Carregando mensagens...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="admin-widget" style="margin-top: 2rem;">
             <h2>Gerenciamento de Usuários</h2>
-            <input type="text" id="user-search-input" placeholder="Buscar por nome, email ou username...">
+            <input type="text" id="user-search-input" placeholder="Buscar por nome ou email...">
             <div class="table-container">
                 <table id="user-table">
                     <thead>
-                        <tr><th>ID</th><th>Nome</th><th>Email</th><th>Username</th><th>Progresso</th><th>Função</th><th>Ações</th></tr>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Função (Role)</th>
+                            <th>Ações</th>
+                        </tr>
                     </thead>
                     <tbody id="user-table-body">
-                        <tr><td colspan="7" class="loading-users">Carregando usuários...</td></tr>
+                        <tr><td colspan="5" class="loading-users">Carregando usuários...</td></tr>
                     </tbody>
                 </table>
             </div>
         </section>
     </main>
 
-    <div id="admin-confirm-modal" class="modal-overlay">
-        <div class="modal-content glass-panel">
-            <div class="modal-header">
-                <h2 id="confirm-modal-title">Confirmar Ação</h2>
-                <span class="close-modal" id="close-confirm-modal">&times;</span>
-            </div>
-            <div class="modal-body">
-                <p id="confirm-modal-text">Você tem certeza?</p>
-                <div class="profile-actions" style="justify-content: flex-end;">
-                    <button class="button-secondary" id="confirm-modal-cancel">Cancelar</button>
-                    <button class="button-danger" id="confirm-modal-confirm">Confirmar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js" defer></script>
     <script src="admin.js" defer></script>
 </body>
 </html>

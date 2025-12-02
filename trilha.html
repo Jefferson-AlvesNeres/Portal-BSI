@@ -1,21 +1,66 @@
 <!DOCTYPE html>
-<html lang="pt-br" data-theme="dark"> 
+<html lang="pt-br" data-theme="dark">
 <head>
-    <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jornada das Constelações - Guia BSI</title>
-    <link rel="stylesheet" href="style.css"> <link rel="stylesheet" href="guia.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub de Conhecimento - Guia BSI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="trilha.css">
+    <link rel="stylesheet" href="guia.css">
+    <script>
+        if (sessionStorage.getItem('isLoggedIn') !== 'true' || !sessionStorage.getItem('user')) {
+            sessionStorage.clear(); window.location.href = 'login.html';
+        }
+    </script>
 </head>
 <body class="trilha-page">
-    <div id="background-animation">...</div>
-    <header class="trilha-header">...</header>
-    <nav class="guia-nav"> <a href="trilha.html" class="guia-nav-link active">...<span>Jornada</span></a>
-        <a href="guia-programacao.html" class="guia-nav-link">...<span>Programação</span></a>
-    </nav>
+    <div id="background-animation"></div>
+
+    <header class="trilha-header">
+        <div class="header-content">
+            <a href="index.html" class="back-link">&larr; Portal</a>
+            <button id="theme-toggle">☀️</button>
+            <h1>Hub de Conhecimento BSI</h1>
+            <p>Explore trilhas de aprendizado ou consulte o laboratório de códigos.</p>
+        </div>
+        
+        <div class="hub-tabs">
+            <button class="hub-tab active" data-target="learning">Trilhas de Aprendizado</button>
+            <button class="hub-tab" data-target="code">Laboratório de Código</button>
+        </div>
+
+        <div class="progress-section-unique" id="progress-container">
+            <h3>Seu Progresso Global</h3>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="total-progress-bar" style="width: 0%;"></div>
+            </div>
+            <span class="progress-text" id="total-progress-text">0%</span>
+        </div>
+    </header>
+
     <main class="trilha-main">
-        <div id="sky-container" class="sky-container glass-panel"><div id="constellation-map"></div></div>
-        <nav class="semester-nav">...</nav>
+        
+        <div id="view-learning" class="hub-view active">
+            <div class="category-filters">
+                <button class="cat-btn active" data-cat="all">Todas</button>
+                <button class="cat-btn" data-cat="dev">Desenvolvimento</button>
+                <button class="cat-btn" data-cat="infra">Infraestrutura</button>
+                <button class="cat-btn" data-cat="data">Dados</button>
+                <button class="cat-btn" data-cat="management">Gestão</button>
+            </div>
+            <div id="sky-container" class="sky-container glass-panel">
+                <div id="constellation-map"></div>
+            </div>
+        </div>
+
+        <div id="view-code" class="hub-view" style="display: none;">
+            <div class="code-grid" id="code-grid-container">
+                </div>
+        </div>
+
     </main>
-    <script src="script.js" defer></script> 
+
+    <script src="script.js" defer></script>
     <script src="trilha.js" defer></script>
 </body>
 </html>

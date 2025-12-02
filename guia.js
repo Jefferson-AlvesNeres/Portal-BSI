@@ -1,50 +1,20 @@
 // guia.js
-// (Versão Corrigida - Erro de Escopo 'applyGuiaTheme')
+// Gerencia lógica comum de guias.
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM Carregado. Iniciando guia.js...");
-
-    // --- Verificação de Login (Necessária para buscar dados) ---
-    let user = null;
-    try { user = JSON.parse(sessionStorage.getItem('user')); } catch (e) {}
-    if (sessionStorage.getItem('isLoggedIn') !== 'true' || !user || !user.id) {
-        console.warn("Usuário não logado ou dados inválidos em guia.js. Algumas funcionalidades podem falhar.");
-        // Não redireciona daqui, mas as chamadas API protegidas falharão
-    }
-    const userId = user?.id; // Pode ser null se não logado
-
-    // --- DEFINIÇÃO DA FUNÇÃO DE TEMA (MOVIDA PARA ESCOPO GLOBAL) ---
-    // Esta função agora está visível para todos os blocos de código abaixo.
-    const applyGuiaTheme = (theme) => {
-        const docElement = document.documentElement;
-        const toggleButton = document.getElementById('guia-theme-toggle'); // Busca o botão
-        
-        docElement.setAttribute('data-theme', theme);
-        
-        if (toggleButton) { // Só mexe no botão se ele existir
-            toggleButton.textContent = theme === 'light' ? '🌙' : '☀️';
-        }
-        
-        // Atualiza cor do SVG na página de tópico, se existir
-        const svgElement = document.querySelector('#topico-svg-container svg');
-        if (svgElement) {
-            // No guia.css, a cor primária é usada em ambos os temas
-            svgElement.style.fill = 'var(--guia-primary)'; 
-        }
-    };
-    // --- FIM DA DEFINIÇÃO DA FUNÇÃO ---
-
-
-    // --- Lógica Tema Guia/Tópico (EVENT LISTENER) ---
+    // --- TEMA ESPECÍFICO GUIA (Se houver botão) ---
     const guiaThemeToggle = document.getElementById('guia-theme-toggle');
     if (guiaThemeToggle) {
         const docElement = document.documentElement;
-        
-        // Aplica o tema salvo na inicialização
-        const savedTheme = localStorage.getItem('guiaTheme') || 'dark'; // Padrão escuro
+        const applyGuiaTheme = (theme) => {
+            docElement.setAttribute('data-theme', theme);
+            guiaThemeToggle.textContent = theme === 'light' ? '🌙' : '☀️';
+            const svgElement = document.querySelector('#topico-svg-container svg');
+            if (svgElement) svgElement.style.fill = (theme === 'light') ? 'var(--guia-primary)' : 'var(--guia-primary)';
+        };
+        const savedTheme = localStorage.getItem('guiaTheme') || 'dark';
         applyGuiaTheme(savedTheme);
 
-        // Adiciona o clique
         guiaThemeToggle.addEventListener('click', () => {
             let newTheme = docElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             localStorage.setItem('guiaTheme', newTheme);
@@ -52,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- LÓGICA DE TÓPICO (Só executa se estiver na página de tópico) ---
     // --- LÓGICA PÁGINA 'topico.html' ---
     const topicoMainContent = document.getElementById('topico-main-content');
     if (topicoMainContent) {

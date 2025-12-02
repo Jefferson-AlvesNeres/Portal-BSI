@@ -1,86 +1,114 @@
-// trilha.js
-// Gerencia 'trilha.html' e 'topico.html'.
+// trilha.js - Hub de Conhecimento
 
 document.addEventListener('DOMContentLoaded', () => {
-    let user = null;
-    try { user = JSON.parse(sessionStorage.getItem('user')); } catch (e) {}
-    if (sessionStorage.getItem('isLoggedIn') !== 'true' || !user || !user.id) {
-        alert("Login necessário."); window.location.href = 'login.html'; return;
-    }
+    const user = JSON.parse(sessionStorage.getItem('user'));
     const userId = user.id;
 
-    // --- LÓGICA PÁGINA 'topico.html' ---
-    const topicoMainContent = document.getElementById('topico-main-content');
-    if (topicoMainContent) {
-        const params = new URLSearchParams(window.location.search);
-        const topicId = params.get('id');
-        if (!topicId) { /* ... (Trata erro ID não encontrado) ... */ return; }
-
-        fetch(`http://localhost:3000/api/topic-data/${topicId}`)
-            .then(res => { if (!res.ok) throw new Error('Tópico não encontrado.'); return res.json(); })
-            .then(data => {
-                document.title = `${data.title} - Guia BSI`;
-                document.getElementById('topico-titulo').textContent = data.title;
-                document.getElementById('topico-descricao').textContent = data.description;
-                let contentHTML = '<div class="topico-coluna-esquerda">';
-                // Constrói HTML dinamicamente com base nos dados recebidos (importancia, conceitos, etc.)
-                // ... (código que monta o HTML omitido por brevidade) ...
-                 contentHTML += '</div><div class="topico-coluna-direita">';
-                // ... (resto do HTML) ...
-                 contentHTML += '</div>';
-                topicoMainContent.innerHTML = contentHTML;
-                // Colore o SVG
-                const svgElement = document.querySelector('#topico-svg-container svg');
-                if (svgElement) { /* ... (lógica de colorir SVG) ... */ }
-            })
-            .catch(err => { /* ... (Trata erro fetch) ... */ });
-
-        // Lógica Tema Específico Guia/Tópico
-        const guiaThemeToggle = document.getElementById('guia-theme-toggle');
-        if (guiaThemeToggle) { /* ... (lógica do botão de tema guia.css) ... */ }
-        return; // Fim da lógica da página de tópico
-    }
-
-    // --- LÓGICA PÁGINA 'trilha.html' ---
+    // Elementos
     const map = document.getElementById('constellation-map');
-    const semesterNavButtons = document.querySelectorAll('.semester-button');
-    const totalProgressBar = document.getElementById('total-progress-bar');
-    const totalProgressText = document.getElementById('total-progress-text');
-    if (!map) return; // Sai se não for a página da trilha
+    const codeGrid = document.getElementById('code-grid-container');
+    const tabs = document.querySelectorAll('.hub-tab');
+    const views = document.querySelectorAll('.hub-view');
+    const catBtns = document.querySelectorAll('.cat-btn');
+    
+    let allData = [];
+    let userProgress = {};
 
-    let userProgress = {}; let allTopics = []; let totalTopicsCount = 0;
-    const constellationLayout = { /* ... (Dados de 'pos' e 'lines' - omitido) ... */ };
+    // Configuração de Posições Fixas para o Mapa (Exemplo)
+    // Em produção, você poderia calcular isso matematicamente
+    const positions = [
+        {x: 20, y: 20}, {x: 50, y: 20}, {x: 80, y: 20},
+        {x: 35, y: 50}, {x: 65, y: 50},
+        {x: 20, y: 80}, {x: 50, y: 80}, {x: 80, y: 80},
+        {x: 10, y: 40}, {x: 90, y: 40}, {x: 30, y: 30}, {x: 70, y: 30}
+    ];
 
-    // Lógica Tema Específico Trilha
-    const themeToggle = document.getElementById('theme-toggle'); // Botão diferente
-    if (themeToggle) { /* ... (lógica do botão de tema trilha.css) ... */ }
+    // --- INICIALIZAÇÃO ---
+    fetch(`http://localhost:3000/api/trilha/${userId}`)
+        .then(r => r.json())
+        .then(data => {
+            allData = data;
+            // Mapeia progresso
+            data.forEach(t => { if(t.completed) userProgress[t.id] = true; });
+            
+            renderLearningMap('all'); // Renderiza aba padrão
+            renderCodeGrid(); // Prepara aba de código
+            updateProgress();
+        });
 
-    // Funções de Renderização (renderConstellation, createStar, createLine)
-    function renderConstellation(semesterId) { /* ... (código sem alterações) ... */ }
-    function createStar(id, name, pos, isCompleted) {
-        /* ... (código sem alterações, mas o addEventListener agora redireciona) ... */
-        star.addEventListener('click', () => { window.location.href = `topico.html?id=${id}`; });
-        /* ... */
-     }
-    function createLine(pos1, pos2, isCompleted) { /* ... (código sem alterações) ... */ }
+    // --- RENDERIZAÇÃO MAPA (Aprendizado) ---
+    function renderLearningMap(categoryFilter) {
+        map.innerHTML = '';
+        // Filtra por tipo 'learning' e pela categoria selecionada
+        const items = allData.filter(t => t.type === 'learning' && (categoryFilter === 'all' || t.category === categoryFilter));
+        
+        items.forEach((item, index) => {
+            const pos = positions[index % positions.length]; // Usa posições ciclicamente
+            
+            const star = document.createElement('div');
+            star.className = `star ${userProgress[item.id] ? 'completed' : ''}`;
+            star.style.left = `${pos.x}%`;
+            star.style.top = `${pos.y}%`;
+            star.title = item.name;
+            star.addEventListener('click', () => window.location.href = `topico.html?id=${item.id}`);
 
-    // Funções de Lógica Geral (handleSemesterNavClick, updateTotalProgress)
-    function handleSemesterNavClick(event) { /* ... (código sem alterações) ... */ }
-    function updateTotalProgress() { /* ... (código sem alterações) ... */ }
+            const label = document.createElement('span');
+            label.className = 'star-label';
+            label.style.left = `${pos.x}%`;
+            label.style.top = `${pos.y}%`;
+            label.textContent = item.name;
 
-    // Inicialização da Trilha (Busca dados da API)
-    async function initTrilha() {
-        try {
-            const response = await fetch(`http://localhost:3000/api/trilha/${userId}`);
-            if (!response.ok) { /* ... (Trata erro fetch/sessão expirada) ... */ throw new Error("Falha API"); }
-            const topics = await response.json();
-            allTopics = topics; totalTopicsCount = topics.length;
-            userProgress = {}; topics.forEach(t => { if (t.completed === 1) userProgress[t.id] = true; });
-            renderConstellation('1'); updateTotalProgress();
-        } catch (error) { console.error('Erro initTrilha:', error); }
-        semesterNavButtons.forEach(btn => btn.addEventListener('click', handleSemesterNavClick));
-        window.addEventListener('resize', () => { /* ... (re-renderiza) ... */ });
+            map.appendChild(star);
+            map.appendChild(label);
+        });
     }
-    initTrilha();
 
-}); // Fim DOMContentLoaded
+    // --- RENDERIZAÇÃO GRID (Código) ---
+    function renderCodeGrid() {
+        codeGrid.innerHTML = '';
+        const items = allData.filter(t => t.type === 'code');
+
+        items.forEach(item => {
+            const card = document.createElement('div');
+            card.className = `code-card ${userProgress[item.id] ? 'completed' : ''}`;
+            card.innerHTML = `
+                <h3>${item.name}</h3>
+                <p>Categoria: ${item.category}</p>
+                <small>${userProgress[item.id] ? '✅ Concluído' : '⭕ Pendente'}</small>
+            `;
+            card.addEventListener('click', () => window.location.href = `topico.html?id=${item.id}`);
+            codeGrid.appendChild(card);
+        });
+    }
+
+    // --- INTERAÇÃO ---
+    
+    // Troca de Abas (Trilha vs Código)
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            views.forEach(v => v.style.display = 'none');
+            
+            tab.classList.add('active');
+            const targetId = `view-${tab.dataset.target}`;
+            document.getElementById(targetId).style.display = 'block';
+        });
+    });
+
+    // Filtro de Categorias (Dentro da aba Trilha)
+    catBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            catBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderLearningMap(btn.dataset.cat);
+        });
+    });
+
+    function updateProgress() {
+        const total = allData.length;
+        const completed = Object.keys(userProgress).length;
+        const pct = total ? Math.round((completed/total)*100) : 0;
+        document.getElementById('total-progress-bar').style.width = `${pct}%`;
+        document.getElementById('total-progress-text').textContent = `${pct}%`;
+    }
+});
