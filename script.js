@@ -262,6 +262,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Menu
-    const mob = document.getElementById('mobile-nav-toggle');
-    if (mob) mob.addEventListener('click', () => document.querySelector('header nav').classList.toggle('nav-open'));
-});
+    const mobileNavToggle = document.getElementById('mobile-nav-toggle');
+    const nav = document.querySelector('header nav');
+
+    if (mobileNavToggle && nav) {
+        mobileNavToggle.addEventListener('click', () => {
+            // 1. Alterna a classe no BODY para mostrar/esconder o menu lateral
+            document.body.classList.toggle('nav-open');
+            
+            // 2. Alterna a classe no BOTÃO para fazer a animação do X
+            mobileNavToggle.classList.toggle('active');
+        });
+
+        // Fecha o menu ao clicar em um link
+        nav.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A') {
+                document.body.classList.remove('nav-open');
+                mobileNavToggle.classList.remove('active'); // Reseta o ícone para barras
+            }
+        });
+}});
