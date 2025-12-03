@@ -139,7 +139,6 @@ app.get('/api/perfil/check-avatar/:id', isLoggedIn, (req, res) => {
 });
 
 
-// --- ALTERAÇÃO NA ROTA DA TRILHA ---
 app.get('/api/trilha/:userId', isLoggedIn, (req, res) => {
     if (req.session.user.id != req.params.userId) return res.status(403).send();
     
@@ -157,7 +156,6 @@ app.get('/api/trilha/:userId', isLoggedIn, (req, res) => {
     });
 });
 
-// ... (Resto do arquivo igual: login, cadastro, perfil, etc.)
 
 // Admin & Contato
 app.post('/api/contact', (req, res) => {
