@@ -1,0 +1,53 @@
+<svg width="800" height="450" viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg-gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#05050a;stop-opacity:1" />
+    </radialGradient>
+    <filter id="glow-purple">
+      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="bright-glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#bg-gradient)"/>
+
+  <g stroke="#a855f7" stroke-width="2" fill="none" filter="url(#glow-purple)" opacity="0.8">
+    <path d="M100 300 L250 250 L450 250 L550 150 M300 350 L350 300 L600 300 M50 200 L150 150 L200 200 L400 100 M650 350 L750 250 L700 200 M500 400 L600 350"/>
+    <path d="M120 320 L220 290 L420 290 M320 370 L420 340 M70 220 L170 190 L370 140 M670 370 L770 320"/>
+    <path d="M50 50 L100 100 L200 50 M700 50 L750 100 L650 150 M400 50 L450 100"/>
+  </g>
+
+  <g fill="#d8b4fe" filter="url(#bright-glow)">
+    <circle cx="250" cy="250" r="5"/>
+    <circle cx="550" cy="150" r="6"/>
+    <circle cx="350" cy="300" r="4"/>
+    <circle cx="150" cy="150" r="5"/>
+    <circle cx="750" cy="250" r="4"/>
+    <circle cx="100" cy="100" r="3"/>
+    <circle cx="700" cy="100" r="3"/>
+    <circle cx="450" cy="100" r="4"/>
+  </g>
+  
+  <g stroke="#7c3aed" stroke-width="1" fill="none" opacity="0.4" filter="url(#glow-purple)">
+    <path d="M50 400 L150 420 L250 400 M600 420 L700 400 L750 430 M300 50 L350 20 L400 50"/>
+    <path d="M100 350 L150 370 M650 300 L700 280 M200 100 L250 80 M550 100 L600 80"/>
+  </g>
+  <g fill="#c084fc" opacity="0.5" filter="url(#glow-purple)">
+    <circle cx="150" cy="420" r="2"/>
+    <circle cx="700" cy="400" r="2"/>
+    <circle cx="350" cy="20" r="2"/>
+    <circle cx="600" cy="80" r="2"/>
+  </g>
+
+</svg>
