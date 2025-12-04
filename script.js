@@ -1,33 +1,28 @@
-// script.js - VERSÃO FINAL (CONECTADA AO RENDER)
-
-// --- CONFIGURAÇÃO DA API ---
-// Use este link para conectar ao seu servidor online no Render
 const API_BASE_URL = "https://portal-bsi.onrender.com";
-// Se for testar o backend rodando no seu PC, mude para:
-// const API_BASE_URL = "http://localhost:3000";
 
 console.log("Iniciando script.js...");
 
-// --- 1. LIMPEZA E VALIDAÇÃO DE SESSÃO ---
+// --- 1. AUTO-CORREÇÃO DE SESSÃO (Executa antes de tudo) ---
+// Isso detecta o erro da sua imagem e limpa a memória automaticamente
 try {
     const storedUser = sessionStorage.getItem('user');
     const isLoggedIn = sessionStorage.getItem('isLoggedIn');
 
+    // Se diz que está logado, mas o usuário não existe ou não tem ID
     if (isLoggedIn === 'true') {
-        // Se diz que está logado, mas não tem usuário ou o usuário não tem ID, limpa tudo.
-        if (!storedUser || storedUser === "undefined" || storedUser === "null") {
-            console.warn("Sessão corrompida (sem objeto user). Limpando...");
+        if (!storedUser || storedUser === "undefined") {
+            console.warn("Sessão corrompida encontrada. Limpando.");
             sessionStorage.clear();
         } else {
             const u = JSON.parse(storedUser);
             if (!u || !u.id) {
-                console.warn("Sessão corrompida (user sem ID). Limpando...");
+                console.warn("Usuário sem ID encontrado. Limpando.");
                 sessionStorage.clear();
             }
         }
     }
 } catch (e) {
-    console.error("Erro crítico na verificação de sessão. Resetando...", e);
+    console.error("Erro na verificação de sessão. Resetando.", e);
     sessionStorage.clear();
 }
 
@@ -49,7 +44,7 @@ function clearError(input, errorElement) {
     }
 }
 
-// Avatares Pré-definidos
+// Avatares SVG
 const presetAvatars = {
     solaris: `<svg viewBox="0 0 100 100" fill="none" stroke="#F59E0B" stroke-width="5"><circle cx="50" cy="50" r="45"/><path d="M50 15V35M50 65V85M15 50H35M65 50H85M25 25L40 40M60 60L75 75M25 75L40 60M60 40L75 25" stroke-width="4"/></svg>`,
     circuit: `<svg viewBox="0 0 100 100" fill="none" stroke="#C4B5FD" stroke-width="4"><rect x="5" y="5" width="90" height="90" rx="10"/><path d="M30 30H70V70H30Z M30 50H50 M50 30V50 M50 70V50 M70 50H50" stroke-width="3"/><circle cx="50" cy="50" r="5" fill="#FDE047" stroke="none"/></svg>`,
@@ -76,17 +71,26 @@ function updatePresetAvatarColors() {
     const isDark = document.documentElement.classList.contains('dark-mode');
     document.querySelectorAll('.profile-avatar > svg, .avatar-option svg, .header-avatar > svg').forEach(svg => {
         if(svg.id.includes('placeholder')) { svg.style.stroke = isDark ? '#aaa' : '#555'; return; }
+        
+        const key = svg.closest('[data-key]')?.dataset.key; 
         svg.style.stroke = 'currentColor';
-        const key = svg.closest('[data-key]')?.dataset.key;
-        if(key === 'solaris') svg.style.stroke = isDark ? '#A78BFA' : '#F59E0B';
-    });
-}
+        svg.style.fill = 'none';
 
-function getAvatarHTML(avatarPath) {
-    if (avatarPath && presetAvatars[avatarPath]) return presetAvatars[avatarPath];
-    // Ajuste aqui: Usa API_BASE_URL para a imagem
-    if (avatarPath && avatarPath.startsWith('uploads/')) return `<img src="${API_BASE_URL}/${avatarPath}?${Date.now()}" alt="Avatar">`;
-    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+        // Cores específicas para Cyberpunk
+        const theme = document.documentElement.getAttribute('data-theme');
+        if (theme === 'cyber') {
+             svg.style.stroke = '#00f3ff'; 
+             if(key === 'solaris') svg.style.stroke = '#ff00ff';
+             return;
+        }
+
+        // Cores padrões
+        if(key === 'solaris') svg.style.stroke = isDark ? '#A78BFA' : '#F59E0B';
+        else if(key === 'circuit') {
+            svg.style.stroke = isDark ? '#C4B5FD' : '#0891b2';
+            const c = svg.querySelector('circle'); if(c) { c.style.fill = isDark ? '#FDE047' : '#F59E0B'; c.style.stroke='none'; }
+        }
+    });
 }
 
 function loadHeaderAvatar() {
@@ -96,7 +100,9 @@ function loadHeaderAvatar() {
     try {
         const user = JSON.parse(sessionStorage.getItem('user'));
         if (user && user.avatar) {
-            disp.innerHTML = getAvatarHTML(user.avatar);
+            if (presetAvatars[user.avatar]) disp.innerHTML = presetAvatars[user.avatar];
+            else if (user.avatar.startsWith('uploads/')) disp.innerHTML = `<img src="http://localhost:3000/${user.avatar}?${Date.now()}">`;
+            else disp.appendChild(placeholderSvgFragment());
         } else {
             disp.appendChild(placeholderSvgFragment());
         }
@@ -104,31 +110,44 @@ function loadHeaderAvatar() {
     } catch (e) { console.error(e); }
 }
 
-// --- 3. DOM READY ---
+// --- 3. INICIALIZAÇÃO (DOM READY) ---
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM Pronto.");
 
-    // Tema
+    // TEMA (Claro, Escuro, Cyber)
     const themeBtn = document.getElementById('theme-toggle');
+    const themes = ['light', 'dark', 'cyber'];
     if (themeBtn) {
         const set = (t) => {
-            document.documentElement.classList.toggle('dark-mode', t==='dark');
-            themeBtn.textContent = t==='dark' ? 'Modo Claro' : 'Modo Escuro';
+            document.documentElement.classList.remove('dark-mode');
+            document.documentElement.setAttribute('data-theme', t);
+            if(t === 'dark') document.documentElement.classList.add('dark-mode');
+            
+            if(t==='light') themeBtn.textContent = 'Tema: Claro';
+            else if(t==='dark') themeBtn.textContent = 'Tema: Alerta';
+            else themeBtn.textContent = 'Tema: Cyber';
+            
             updatePresetAvatarColors();
         };
-        set(localStorage.getItem('theme')||'light');
+        let saved = localStorage.getItem('theme');
+        if(!themes.includes(saved)) saved = 'light';
+        set(saved);
+
         themeBtn.addEventListener('click', () => {
-            const newT = document.documentElement.classList.contains('dark-mode') ? 'light' : 'dark';
-            localStorage.setItem('theme', newT); set(newT);
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            let index = themes.indexOf(current);
+            index = (index + 1) % themes.length;
+            localStorage.setItem('theme', themes[index]);
+            set(themes[index]);
         });
     }
 
-    // Login State
+    // ESTADO DE LOGIN
     const checkLogin = () => {
         const isLogged = sessionStorage.getItem('isLoggedIn') === 'true';
         let user = null;
         try { user = JSON.parse(sessionStorage.getItem('user')); } catch(e){}
-
+        
         if(document.querySelector('.login-link-nav')) document.querySelector('.login-link-nav').style.display = isLogged ? 'none' : 'inline-block';
         if(document.querySelector('.profile-link-nav')) document.querySelector('.profile-link-nav').style.display = isLogged ? 'inline-block' : 'none';
         if(document.getElementById('logout-btn')) document.getElementById('logout-btn').style.display = isLogged ? 'inline-block' : 'none';
@@ -138,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     checkLogin();
 
-    // Logout
+    // LOGOUT
     const logout = document.getElementById('logout-btn');
     if (logout) {
         logout.addEventListener('click', (e) => {
@@ -151,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Cadastro
+    // CADASTRO
     const regForm = document.getElementById('registration-form');
     if (regForm) {
         regForm.addEventListener('submit', (e) => {
@@ -172,19 +191,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     sessionStorage.setItem('user', JSON.stringify(d.user));
                     window.location.href = 'perfil.html';
                 } else { alert(d.message); }
-            })
-            .catch(e => alert("Erro ao conectar: " + e));
+            });
         });
     }
 
-    // Login
+    // LOGIN
     const logForm = document.querySelector('.auth-form:not(#registration-form)');
     if (logForm && window.location.pathname.includes('login.html')) {
         logForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
-            
             fetch(`${API_BASE_URL}/api/login`, {
                 method: 'POST', headers: {'Content-Type':'application/json'},
                 body: JSON.stringify({email, password: pass})
@@ -197,105 +214,129 @@ document.addEventListener('DOMContentLoaded', () => {
                     if(d.user.role === 'admin') window.location.href = 'admin.html';
                     else window.location.href = 'perfil.html';
                 } else { alert(d.message); }
-            })
-            .catch(e => alert("Erro ao conectar: " + e));
+            });
         });
     }
 
-    // PERFIL (Sem Username)
+    // --- LÓGICA DO PERFIL (SEM USERNAME) ---
     const profCont = document.querySelector('.profile-container');
     if (profCont) {
-        const user = JSON.parse(sessionStorage.getItem('user'));
-        if (!user) { window.location.href = 'login.html'; return; }
+        console.log("Carregando perfil...");
+        
+        // Verificação Dupla: Se chegou aqui mas o Auto-Correção lá em cima limpou a sessão
+        // ou se o ID não existe, redireciona.
+        let user = null;
+        try { user = JSON.parse(sessionStorage.getItem('user')); } catch(e){}
+        
+        if (!user || !user.id) {
+            console.warn("Perfil acessado sem usuário válido. Redirecionando.");
+            window.location.href = 'login.html';
+            return;
+        }
 
-        // Preencher dados
+        // Preencher dados visuais
         profCont.querySelector('#profile-name').textContent = user.name;
         profCont.querySelector('#profile-email').textContent = user.email;
         profCont.querySelector('#member-since').textContent = `Membro desde: ${new Date(user.created_at).toLocaleDateString()}`;
 
-        // Avatar
-        const avDiv = profCont.querySelector('.profile-avatar');
-        avDiv.innerHTML = getAvatarHTML(user.avatar);
-        // Overlay para troca
-        const ov = document.createElement('div'); ov.className = 'avatar-interactive-overlay';
-        ov.innerHTML = '<span>Trocar</span>';
-        ov.onclick = () => document.getElementById('avatar-upload').click();
-        avDiv.appendChild(ov);
+        // Exibir Avatar
+        const showAv = () => {
+            const c = profCont.querySelector('.profile-avatar');
+            c.innerHTML = '';
+            if (presetAvatars[user.avatar]) c.innerHTML = presetAvatars[user.avatar];
+            else if (user.avatar.startsWith('uploads/')) c.innerHTML = `<img src="${API_BASE_URL}/${user.avatar}?${Date.now()}">`;
+            else c.appendChild(placeholderSvgFragment());
+            
+            const ov = document.createElement('div'); ov.className = 'avatar-interactive-overlay';
+            ov.innerHTML = `<button id="btn-upload">Upload</button><button id="btn-preset">Escolher</button>`;
+            c.appendChild(ov);
+            updatePresetAvatarColors();
+        };
+        showAv();
+
+        // --- Listeners do Perfil (Só adiciona se os elementos existirem) ---
         
-        // Atualiza cor
-        updatePresetAvatarColors();
-
-        // Progresso
-        fetch(`${API_BASE_URL}/api/progresso/${user.id}`)
-            .then(r => r.json())
-            .then(d => profCont.querySelector('.stat-number').textContent = `${d.percentage}%`)
-            .catch(() => profCont.querySelector('.stat-number').textContent = '0%');
-
-        // Upload Listener
-        const up = document.getElementById('avatar-upload');
-        if(up) {
-            up.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if(!file) return;
+        // Clique no Avatar (Upload ou Preset)
+        profCont.querySelector('.profile-avatar').addEventListener('click', (e) => {
+            if (e.target.closest('#btn-upload')) document.getElementById('avatar-upload').click();
+            if (e.target.closest('#btn-preset')) {
+                const modal = document.getElementById('avatar-choice-modal');
+                const cont = modal.querySelector('.avatar-options-container');
+                cont.innerHTML = '';
+                Object.keys(presetAvatars).forEach(k => {
+                    const d = document.createElement('div'); d.className = 'avatar-option'; d.innerHTML = presetAvatars[k]; d.dataset.key = k;
+                    d.addEventListener('click', () => {
+                        fetch(`${API_BASE_URL}/api/perfil/avatar`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ avatarKey: k }) })
+                            .then(r => r.json()).then(d => {
+                                user.avatar = d.avatar; sessionStorage.setItem('user', JSON.stringify(user)); showAv(); loadHeaderAvatar(); modal.classList.remove('active');
+                            });
+                    });
+                    cont.appendChild(d);
+                });
+                updatePresetAvatarColors();
+                modal.classList.add('active');
+            }
+        });
+        
+        // Input de Upload
+        const upInput = document.getElementById('avatar-upload');
+        if(upInput) {
+            upInput.addEventListener('change', (e) => {
+                const file = e.target.files[0]; if(!file) return;
                 const fd = new FormData(); fd.append('avatarFile', file);
                 fetch(`${API_BASE_URL}/api/perfil/upload-avatar`, { method: 'POST', body: fd })
-                .then(r=>r.json()).then(d=>{
-                    user.avatar = d.avatar;
-                    sessionStorage.setItem('user', JSON.stringify(user));
-                    window.location.reload();
+                .then(r => r.json()).then(d => {
+                    user.avatar = d.avatar; sessionStorage.setItem('user', JSON.stringify(user)); showAv(); loadHeaderAvatar();
+                })
+                .catch(err => alert(err.message));
+            });
+        }
+
+        // Fechar Modais
+        document.querySelectorAll('.close-modal').forEach(b => b.addEventListener('click', () => {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+        }));
+
+        // Botão Editar Nome/Email
+        const editBtn = document.getElementById('open-edit-modal-btn');
+        const editModal = document.getElementById('edit-profile-modal');
+        if (editBtn && editModal) {
+            editBtn.addEventListener('click', () => {
+                document.getElementById('edit-name').value = user.name;
+                document.getElementById('edit-email').value = user.email;
+                editModal.classList.add('active');
+            });
+            document.getElementById('edit-profile-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const n = document.getElementById('edit-name').value;
+                const em = document.getElementById('edit-email').value;
+                fetch(`${API_BASE_URL}/api/perfil`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({name:n, email:em}) })
+                .then(r=>r.json()).then(d=>{ 
+                    alert(d.message); user.name=n; user.email=em; sessionStorage.setItem('user', JSON.stringify(user));
+                    profCont.querySelector('#profile-name').textContent = n;
+                    profCont.querySelector('#profile-email').textContent = em;
+                    editModal.classList.remove('active'); 
                 });
             });
         }
         
-        // Modais (Edit, Senha)
-        const setupModal = (btnId, modalId, formId, endpoint) => {
-            const btn = document.getElementById(btnId);
-            const modal = document.getElementById(modalId);
-            if(btn && modal) {
-                btn.addEventListener('click', () => {
-                    if (btnId === 'open-edit-modal-btn') {
-                        document.getElementById('edit-name').value = user.name;
-                        document.getElementById('edit-email').value = user.email;
-                    }
-                    modal.classList.add('active');
-                });
-                
-                modal.querySelector('.close-modal').addEventListener('click', () => modal.classList.remove('active'));
-                
-                document.getElementById(formId).addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    const formData = {};
-                    new FormData(e.target).forEach((v, k) => formData[k] = v);
-                    
-                    let body = {};
-                    if (endpoint.includes('senha')) {
-                        body = { currentPassword: document.getElementById('current-password').value, newPassword: document.getElementById('new-password').value };
-                    } else {
-                        body = { name: document.getElementById('edit-name').value, email: document.getElementById('edit-email').value };
-                    }
+        // Botão Alterar Senha
+        const passBtn = document.getElementById('open-change-password-modal-btn');
+        const passModal = document.getElementById('change-password-modal');
+        if (passBtn && passModal) {
+            passBtn.addEventListener('click', () => passModal.classList.add('active'));
+            document.getElementById('change-password-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const cp = document.getElementById('current-password').value;
+                const np = document.getElementById('new-password').value;
+                fetch(`${API_BASE_URL}/api/perfil/senha`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({currentPassword:cp, newPassword:np}) })
+                .then(r=>r.json()).then(d=>{ alert(d.message); passModal.classList.remove('active'); });
+            });
+        }
 
-                    fetch(`${API_BASE_URL}${endpoint}`, {
-                        method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)
-                    })
-                    .then(r => r.json())
-                    .then(d => {
-                        alert(d.message);
-                        if(d.user) {
-                            sessionStorage.setItem('user', JSON.stringify({...user, ...d.user}));
-                            window.location.reload();
-                        } else {
-                            modal.classList.remove('active');
-                        }
-                    });
-                });
-            }
-        };
-
-        setupModal('open-edit-modal-btn', 'edit-profile-modal', 'edit-profile-form', '/api/perfil');
-        setupModal('open-change-password-modal-btn', 'change-password-modal', 'change-password-form', '/api/perfil/senha');
-
+        // Botão Deletar
         const delBtn = document.getElementById('delete-account-btn');
-        if(delBtn) {
+        if (delBtn) {
             delBtn.addEventListener('click', () => {
                 if(confirm("Certeza?")) {
                     fetch(`${API_BASE_URL}/api/perfil/${user.id}`, { method: 'DELETE' })
@@ -303,9 +344,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
+
+        // Progresso (Tratamento de erro robusto)
+        if (user.id) {
+            fetch(`${API_BASE_URL}/api/progresso/${user.id}`)
+                .then(r => r.json())
+                .then(d => {
+                     const statNum = profCont.querySelector('.stat-number');
+                     if(statNum) statNum.textContent = `${d.percentage}%`;
+                })
+                .catch(() => { 
+                    const statNum = profCont.querySelector('.stat-number');
+                    if(statNum) statNum.textContent = '0%';
+                });
+        }
     }
 
     // Menu Mobile
     const mob = document.getElementById('mobile-nav-toggle');
     if (mob) mob.addEventListener('click', () => document.querySelector('header nav').classList.toggle('active'));
+
+
+    
 });

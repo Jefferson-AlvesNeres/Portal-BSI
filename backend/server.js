@@ -1,5 +1,3 @@
-// backend/server.js
-// Versão Pronta para Deploy (Render/Vercel)
 
 const express = require('express');
 const cors = require('cors');

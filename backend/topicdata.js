@@ -32,7 +32,7 @@ const svgs = {
 
 
 // --- CONTEÚDO DE CÓDIGO (IDs 101+) ---
-    101: {
+   101: {
         title: "Algoritmos de Ordenação",
         description: "Especificações e implementações de Bubble Sort, Quick Sort e Merge Sort.",
         svgKey: "code",
