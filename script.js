@@ -1,32 +1,36 @@
+// script.js - VERSÃO FINAL ONLINE (Conectada ao Render)
+
+// Define o endereço do backend.
+// - Localmente use: "http://localhost:3000"
+// - Online use: "https://portal-bsi.onrender.com"
 const API_BASE_URL = "https://portal-bsi.onrender.com";
 
-console.log("Iniciando script.js...");
+console.log(`Iniciando script.js conectando em: ${API_BASE_URL}`);
 
-// --- 1. AUTO-CORREÇÃO DE SESSÃO (Executa antes de tudo) ---
-// Isso detecta o erro da sua imagem e limpa a memória automaticamente
+// --- 1. AUTO-CORREÇÃO DE SESSÃO ---
+// Verifica se há dados corrompidos no navegador e limpa se necessário
 try {
     const storedUser = sessionStorage.getItem('user');
     const isLoggedIn = sessionStorage.getItem('isLoggedIn');
 
-    // Se diz que está logado, mas o usuário não existe ou não tem ID
     if (isLoggedIn === 'true') {
-        if (!storedUser || storedUser === "undefined") {
-            console.warn("Sessão corrompida encontrada. Limpando.");
+        if (!storedUser || storedUser === "undefined" || storedUser === "null") {
+            console.warn("Sessão corrompida (sem objeto user). Limpando.");
             sessionStorage.clear();
         } else {
             const u = JSON.parse(storedUser);
             if (!u || !u.id) {
-                console.warn("Usuário sem ID encontrado. Limpando.");
+                console.warn("Sessão corrompida (user sem ID). Limpando.");
                 sessionStorage.clear();
             }
         }
     }
 } catch (e) {
-    console.error("Erro na verificação de sessão. Resetando.", e);
+    console.error("Erro crítico na verificação de sessão. Resetando.", e);
     sessionStorage.clear();
 }
 
-// --- 2. DADOS E FUNÇÕES GLOBAIS ---
+// --- 2. HELPERS GLOBAIS ---
 
 function showError(input, errorElement, message) {
     if (input) input.classList.add('invalid');
@@ -44,7 +48,8 @@ function clearError(input, errorElement) {
     }
 }
 
-// Avatares SVG
+// --- 3. AVATARES E UI ---
+
 const presetAvatars = {
     solaris: `<svg viewBox="0 0 100 100" fill="none" stroke="#F59E0B" stroke-width="5"><circle cx="50" cy="50" r="45"/><path d="M50 15V35M50 65V85M15 50H35M65 50H85M25 25L40 40M60 60L75 75M25 75L40 60M60 40L75 25" stroke-width="4"/></svg>`,
     circuit: `<svg viewBox="0 0 100 100" fill="none" stroke="#C4B5FD" stroke-width="4"><rect x="5" y="5" width="90" height="90" rx="10"/><path d="M30 30H70V70H30Z M30 50H50 M50 30V50 M50 70V50 M70 50H50" stroke-width="3"/><circle cx="50" cy="50" r="5" fill="#FDE047" stroke="none"/></svg>`,
@@ -67,100 +72,105 @@ function placeholderSvgFragment() {
     return div.firstChild;
 }
 
+function getAvatarHTML(avatarPath) {
+    if (avatarPath && presetAvatars[avatarPath]) return presetAvatars[avatarPath];
+    // Verifica se é upload e usa a URL da API corretamente
+    if (avatarPath && avatarPath.startsWith('uploads/')) {
+        return `<img src="${API_BASE_URL}/${avatarPath}?${Date.now()}" alt="Avatar">`;
+    }
+    // Placeholder padrão
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+}
+
 function updatePresetAvatarColors() {
-    const isDark = document.documentElement.classList.contains('dark-mode');
+    const theme = document.documentElement.getAttribute('data-theme') || 'light';
+    const isDark = theme === 'dark' || theme === 'cyber';
+
     document.querySelectorAll('.profile-avatar > svg, .avatar-option svg, .header-avatar > svg').forEach(svg => {
-        if(svg.id.includes('placeholder')) { svg.style.stroke = isDark ? '#aaa' : '#555'; return; }
-        
-        const key = svg.closest('[data-key]')?.dataset.key; 
+        if (svg.id.includes('placeholder')) { svg.style.stroke = isDark ? '#aaa' : '#555'; return; }
         svg.style.stroke = 'currentColor';
-        svg.style.fill = 'none';
-
-        // Cores específicas para Cyberpunk
-        const theme = document.documentElement.getAttribute('data-theme');
-        if (theme === 'cyber') {
-             svg.style.stroke = '#00f3ff'; 
-             if(key === 'solaris') svg.style.stroke = '#ff00ff';
-             return;
-        }
-
-        // Cores padrões
-        if(key === 'solaris') svg.style.stroke = isDark ? '#A78BFA' : '#F59E0B';
-        else if(key === 'circuit') {
-            svg.style.stroke = isDark ? '#C4B5FD' : '#0891b2';
-            const c = svg.querySelector('circle'); if(c) { c.style.fill = isDark ? '#FDE047' : '#F59E0B'; c.style.stroke='none'; }
+        
+        const key = svg.closest('[data-key]')?.dataset.key;
+        
+        // Cores Específicas
+        if(theme === 'cyber') {
+            svg.style.stroke = '#00f3ff';
+            if(key === 'solaris') svg.style.stroke = '#ff00ff';
+        } else {
+             if(key === 'solaris') svg.style.stroke = isDark ? '#A78BFA' : '#F59E0B';
         }
     });
 }
 
-function loadHeaderAvatar() {
-    const disp = document.getElementById('header-avatar-display');
-    if (!disp) return;
-    disp.innerHTML = '';
-    try {
-        const user = JSON.parse(sessionStorage.getItem('user'));
-        if (user && user.avatar) {
-            if (presetAvatars[user.avatar]) disp.innerHTML = presetAvatars[user.avatar];
-            else if (user.avatar.startsWith('uploads/')) disp.innerHTML = `<img src="http://localhost:3000/${user.avatar}?${Date.now()}">`;
-            else disp.appendChild(placeholderSvgFragment());
-        } else {
-            disp.appendChild(placeholderSvgFragment());
-        }
-        updatePresetAvatarColors();
-    } catch (e) { console.error(e); }
-}
+// --- 4. INICIALIZAÇÃO E UI ---
 
-// --- 3. INICIALIZAÇÃO (DOM READY) ---
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM Pronto.");
+    
+    // Função para carregar avatar do header
+    const loadHeaderAvatar = () => {
+        const disp = document.getElementById('header-avatar-display');
+        if (!disp) return;
+        disp.innerHTML = '';
+        try {
+            const user = JSON.parse(sessionStorage.getItem('user'));
+            if (user && user.avatar) {
+                disp.innerHTML = getAvatarHTML(user.avatar);
+            } else {
+                disp.appendChild(placeholderSvgFragment());
+            }
+            updatePresetAvatarColors();
+        } catch (e) {}
+    };
 
-    // TEMA (Claro, Escuro, Cyber)
+    // Configuração do Tema
     const themeBtn = document.getElementById('theme-toggle');
     const themes = ['light', 'dark', 'cyber'];
     if (themeBtn) {
         const set = (t) => {
             document.documentElement.classList.remove('dark-mode');
             document.documentElement.setAttribute('data-theme', t);
-            if(t === 'dark') document.documentElement.classList.add('dark-mode');
-            
-            if(t==='light') themeBtn.textContent = 'Tema: Claro';
-            else if(t==='dark') themeBtn.textContent = 'Tema: Alerta';
-            else themeBtn.textContent = 'Tema: Cyber';
-            
+            if (t === 'dark') document.documentElement.classList.add('dark-mode');
+            themeBtn.textContent = t === 'light' ? 'Tema: Claro' : (t === 'dark' ? 'Tema: Alerta' : 'Tema: Cyber');
             updatePresetAvatarColors();
         };
-        let saved = localStorage.getItem('theme');
-        if(!themes.includes(saved)) saved = 'light';
-        set(saved);
-
+        set(localStorage.getItem('theme') || 'light');
         themeBtn.addEventListener('click', () => {
             const current = document.documentElement.getAttribute('data-theme') || 'light';
             let index = themes.indexOf(current);
-            index = (index + 1) % themes.length;
-            localStorage.setItem('theme', themes[index]);
-            set(themes[index]);
+            const next = themes[(index + 1) % themes.length];
+            localStorage.setItem('theme', next);
+            set(next);
         });
     }
 
-    // ESTADO DE LOGIN
+    // Checagem de Login
     const checkLogin = () => {
         const isLogged = sessionStorage.getItem('isLoggedIn') === 'true';
         let user = null;
         try { user = JSON.parse(sessionStorage.getItem('user')); } catch(e){}
-        
-        if(document.querySelector('.login-link-nav')) document.querySelector('.login-link-nav').style.display = isLogged ? 'none' : 'inline-block';
-        if(document.querySelector('.profile-link-nav')) document.querySelector('.profile-link-nav').style.display = isLogged ? 'inline-block' : 'none';
-        if(document.getElementById('logout-btn')) document.getElementById('logout-btn').style.display = isLogged ? 'inline-block' : 'none';
-        if(document.getElementById('admin-link-nav')) document.getElementById('admin-link-nav').style.display = (isLogged && user?.role === 'admin') ? 'inline-block' : 'none';
-        
+
+        const els = {
+            login: document.querySelector('.login-link-nav'),
+            profile: document.querySelector('.profile-link-nav'),
+            logout: document.getElementById('logout-btn'),
+            cta: document.getElementById('cta-section'),
+            admin: document.getElementById('admin-link-nav')
+        };
+
+        if(els.login) els.login.style.display = isLogged ? 'none' : 'inline-block';
+        if(els.profile) els.profile.style.display = isLogged ? 'inline-block' : 'none';
+        if(els.logout) els.logout.style.display = isLogged ? 'inline-block' : 'none';
+        if(els.cta) els.cta.style.display = isLogged ? 'block' : 'none';
+        if(els.admin) els.admin.style.display = (isLogged && user?.role === 'admin') ? 'inline-block' : 'none';
+
         if (isLogged) loadHeaderAvatar();
     };
     checkLogin();
 
-    // LOGOUT
-    const logout = document.getElementById('logout-btn');
-    if (logout) {
-        logout.addEventListener('click', (e) => {
+    // Logout
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
             fetch(`${API_BASE_URL}/api/logout`, { method: 'POST' })
             .finally(() => {
@@ -170,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // CADASTRO
+    // Cadastro
     const regForm = document.getElementById('registration-form');
     if (regForm) {
         regForm.addEventListener('submit', (e) => {
@@ -180,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const pass = document.getElementById('password').value;
             
             fetch(`${API_BASE_URL}/api/cadastro`, {
-                method: 'POST', headers: {'Content-Type':'application/json'},
+                method: 'POST', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({name, email, password: pass})
             })
             .then(r => r.json())
@@ -191,19 +201,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     sessionStorage.setItem('user', JSON.stringify(d.user));
                     window.location.href = 'perfil.html';
                 } else { alert(d.message); }
-            });
+            })
+            .catch(e => alert("Erro de conexão: " + e));
         });
     }
 
-    // LOGIN
+    // Login
     const logForm = document.querySelector('.auth-form:not(#registration-form)');
     if (logForm && window.location.pathname.includes('login.html')) {
         logForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
+            
             fetch(`${API_BASE_URL}/api/login`, {
-                method: 'POST', headers: {'Content-Type':'application/json'},
+                method: 'POST', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({email, password: pass})
             })
             .then(r => r.json())
@@ -214,49 +226,37 @@ document.addEventListener('DOMContentLoaded', () => {
                     if(d.user.role === 'admin') window.location.href = 'admin.html';
                     else window.location.href = 'perfil.html';
                 } else { alert(d.message); }
-            });
+            })
+            .catch(e => alert("Erro de conexão: " + e));
         });
     }
 
-    // --- LÓGICA DO PERFIL (SEM USERNAME) ---
+    // --- LÓGICA DO PERFIL ---
     const profCont = document.querySelector('.profile-container');
     if (profCont) {
-        console.log("Carregando perfil...");
-        
-        // Verificação Dupla: Se chegou aqui mas o Auto-Correção lá em cima limpou a sessão
-        // ou se o ID não existe, redireciona.
-        let user = null;
-        try { user = JSON.parse(sessionStorage.getItem('user')); } catch(e){}
-        
-        if (!user || !user.id) {
-            console.warn("Perfil acessado sem usuário válido. Redirecionando.");
+        const user = JSON.parse(sessionStorage.getItem('user'));
+        if (!user || sessionStorage.getItem('isLoggedIn') !== 'true') {
             window.location.href = 'login.html';
             return;
         }
 
-        // Preencher dados visuais
+        // Preencher dados
         profCont.querySelector('#profile-name').textContent = user.name;
         profCont.querySelector('#profile-email').textContent = user.email;
-        profCont.querySelector('#member-since').textContent = `Membro desde: ${new Date(user.created_at).toLocaleDateString()}`;
+        profCont.querySelector('#member-since').textContent = `Desde: ${new Date(user.created_at).toLocaleDateString()}`;
 
-        // Exibir Avatar
-        const showAv = () => {
-            const c = profCont.querySelector('.profile-avatar');
-            c.innerHTML = '';
-            if (presetAvatars[user.avatar]) c.innerHTML = presetAvatars[user.avatar];
-            else if (user.avatar.startsWith('uploads/')) c.innerHTML = `<img src="${API_BASE_URL}/${user.avatar}?${Date.now()}">`;
-            else c.appendChild(placeholderSvgFragment());
-            
-            const ov = document.createElement('div'); ov.className = 'avatar-interactive-overlay';
-            ov.innerHTML = `<button id="btn-upload">Upload</button><button id="btn-preset">Escolher</button>`;
-            c.appendChild(ov);
-            updatePresetAvatarColors();
-        };
-        showAv();
-
-        // --- Listeners do Perfil (Só adiciona se os elementos existirem) ---
+        // Renderizar Avatar na página
+        const avDiv = profCont.querySelector('.profile-avatar');
+        avDiv.innerHTML = getAvatarHTML(user.avatar);
         
-        // Clique no Avatar (Upload ou Preset)
+        // Overlay de ações
+        const ov = document.createElement('div'); ov.className = 'avatar-interactive-overlay';
+        ov.innerHTML = `<button id="btn-upload">Up</button><button id="btn-preset">Pick</button>`;
+        avDiv.appendChild(ov);
+        
+        updatePresetAvatarColors();
+
+        // Listeners Avatar
         profCont.querySelector('.profile-avatar').addEventListener('click', (e) => {
             if (e.target.closest('#btn-upload')) document.getElementById('avatar-upload').click();
             if (e.target.closest('#btn-preset')) {
@@ -266,10 +266,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 Object.keys(presetAvatars).forEach(k => {
                     const d = document.createElement('div'); d.className = 'avatar-option'; d.innerHTML = presetAvatars[k]; d.dataset.key = k;
                     d.addEventListener('click', () => {
-                        fetch(`${API_BASE_URL}/api/perfil/avatar`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ avatarKey: k }) })
-                            .then(r => r.json()).then(d => {
-                                user.avatar = d.avatar; sessionStorage.setItem('user', JSON.stringify(user)); showAv(); loadHeaderAvatar(); modal.classList.remove('active');
-                            });
+                        fetch(`${API_BASE_URL}/api/perfil/avatar`, { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({avatarKey: k})})
+                        .then(r=>r.json()).then(d=>{ 
+                            user.avatar = d.avatar; sessionStorage.setItem('user', JSON.stringify(user)); 
+                            avDiv.innerHTML = getAvatarHTML(user.avatar); avDiv.appendChild(ov);
+                            loadHeaderAvatar(); modal.classList.remove('active'); 
+                        });
                     });
                     cont.appendChild(d);
                 });
@@ -277,30 +279,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 modal.classList.add('active');
             }
         });
-        
-        // Input de Upload
-        const upInput = document.getElementById('avatar-upload');
-        if(upInput) {
-            upInput.addEventListener('change', (e) => {
-                const file = e.target.files[0]; if(!file) return;
-                const fd = new FormData(); fd.append('avatarFile', file);
-                fetch(`${API_BASE_URL}/api/perfil/upload-avatar`, { method: 'POST', body: fd })
-                .then(r => r.json()).then(d => {
-                    user.avatar = d.avatar; sessionStorage.setItem('user', JSON.stringify(user)); showAv(); loadHeaderAvatar();
-                })
-                .catch(err => alert(err.message));
+
+        // Upload
+        document.getElementById('avatar-upload').addEventListener('change', (e) => {
+            const fd = new FormData(); fd.append('avatarFile', e.target.files[0]);
+            fetch(`${API_BASE_URL}/api/perfil/upload-avatar`, { method: 'POST', body: fd })
+            .then(r=>r.json()).then(d=>{
+                user.avatar = d.avatar; sessionStorage.setItem('user', JSON.stringify(user));
+                avDiv.innerHTML = getAvatarHTML(user.avatar); avDiv.appendChild(ov);
+                loadHeaderAvatar();
             });
-        }
+        });
+
+        // Progresso
+        fetch(`${API_BASE_URL}/api/progresso/${user.id}`)
+            .then(r => r.json())
+            .then(d => profCont.querySelector('.stat-number').textContent = `${d.percentage}%`)
+            .catch(() => profCont.querySelector('.stat-number').textContent = '0%');
 
         // Fechar Modais
         document.querySelectorAll('.close-modal').forEach(b => b.addEventListener('click', () => {
             document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
         }));
 
-        // Botão Editar Nome/Email
+        // Botões de Edição
         const editBtn = document.getElementById('open-edit-modal-btn');
         const editModal = document.getElementById('edit-profile-modal');
-        if (editBtn && editModal) {
+        if (editBtn) {
             editBtn.addEventListener('click', () => {
                 document.getElementById('edit-name').value = user.name;
                 document.getElementById('edit-email').value = user.email;
@@ -311,59 +316,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 const n = document.getElementById('edit-name').value;
                 const em = document.getElementById('edit-email').value;
                 fetch(`${API_BASE_URL}/api/perfil`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({name:n, email:em}) })
-                .then(r=>r.json()).then(d=>{ 
-                    alert(d.message); user.name=n; user.email=em; sessionStorage.setItem('user', JSON.stringify(user));
-                    profCont.querySelector('#profile-name').textContent = n;
-                    profCont.querySelector('#profile-email').textContent = em;
-                    editModal.classList.remove('active'); 
+                .then(r=>r.json()).then(d => {
+                    alert(d.message); user.name = n; user.email = em; sessionStorage.setItem('user', JSON.stringify(user));
+                    profCont.querySelector('#profile-name').textContent = n; profCont.querySelector('#profile-email').textContent = em;
+                    editModal.classList.remove('active');
                 });
             });
         }
-        
-        // Botão Alterar Senha
-        const passBtn = document.getElementById('open-change-password-modal-btn');
-        const passModal = document.getElementById('change-password-modal');
-        if (passBtn && passModal) {
-            passBtn.addEventListener('click', () => passModal.classList.add('active'));
-            document.getElementById('change-password-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const cp = document.getElementById('current-password').value;
-                const np = document.getElementById('new-password').value;
-                fetch(`${API_BASE_URL}/api/perfil/senha`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({currentPassword:cp, newPassword:np}) })
-                .then(r=>r.json()).then(d=>{ alert(d.message); passModal.classList.remove('active'); });
-            });
-        }
 
-        // Botão Deletar
+        // Deletar
         const delBtn = document.getElementById('delete-account-btn');
         if (delBtn) {
             delBtn.addEventListener('click', () => {
-                if(confirm("Certeza?")) {
-                    fetch(`${API_BASE_URL}/api/perfil/${user.id}`, { method: 'DELETE' })
-                    .then(() => { sessionStorage.clear(); window.location.href = 'index.html'; });
-                }
+                if(confirm("Tem certeza?")) fetch(`${API_BASE_URL}/api/perfil/${user.id}`, { method: 'DELETE' }).then(() => { sessionStorage.clear(); window.location.href = 'index.html'; });
             });
-        }
-
-        // Progresso (Tratamento de erro robusto)
-        if (user.id) {
-            fetch(`${API_BASE_URL}/api/progresso/${user.id}`)
-                .then(r => r.json())
-                .then(d => {
-                     const statNum = profCont.querySelector('.stat-number');
-                     if(statNum) statNum.textContent = `${d.percentage}%`;
-                })
-                .catch(() => { 
-                    const statNum = profCont.querySelector('.stat-number');
-                    if(statNum) statNum.textContent = '0%';
-                });
         }
     }
 
     // Menu Mobile
     const mob = document.getElementById('mobile-nav-toggle');
-    if (mob) mob.addEventListener('click', () => document.querySelector('header nav').classList.toggle('active'));
-
-
-    
+    if (mob) {
+        mob.addEventListener('click', () => {
+            document.querySelector('header nav').classList.toggle('active');
+            mob.classList.toggle('active');
+        });
+    }
 });
